@@ -40,3 +40,138 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ===============================================
+   ESTILOS DE IMPRESIÓN - RECIBOS
+   =============================================== */
+
+@media print {
+  /* Configuración general de página */
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  /* Mostrar solo lo que está en el recibo */
+  .receipt-modal-wrapper {
+    position: static !important;
+    background: white !important;
+    display: flex !important;
+    z-index: auto !important;
+  }
+
+  .receipt-modal-content {
+    position: static !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+    background: white !important;
+  }
+
+  .receipt-container {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  .receipt-document {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    page-break-after: always;
+    box-shadow: none !important;
+  }
+
+  /* Ocultar botones de acciones */
+  button {
+    display: none !important;
+  }
+
+  /* Ocultar navegación y elementos de UI */
+  nav, header, footer, .sticky, .flex.justify-end.gap-2, .bg-gray-50, .border-t {
+    display: none !important;
+  }
+
+  /* Ocultar todo excepto el recibo */
+  body > * {
+    display: none !important;
+  }
+
+  body > .receipt-modal-wrapper {
+    display: flex !important;
+  }
+
+  /* Asegurar visibilidad de elementos del recibo */
+  .receipt-modal-wrapper > * {
+    display: flex !important;
+  }
+
+  .receipt-modal-content > * {
+    display: block !important;
+  }
+
+  /* Tablas */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    page-break-inside: avoid;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  td, th {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    background: white !important;
+  }
+
+  thead tr {
+    background: #e0e0e0 !important;
+    display: table-header-group;
+  }
+
+  /* Márgenes y espaciado */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  /* Links */
+  a {
+    color: black !important;
+    text-decoration: underline !important;
+  }
+
+  /* Prevenir códigos de color de fondo */
+  .bg-gray-800, .bg-blue-600, .bg-green-600, .bg-red-600 {
+    background: white !important;
+  }
+
+  .text-white {
+    color: black !important;
+  }
+
+  /* Márgenes de seguridad */
+  .p-8 {
+    padding: 0 !important;
+  }
+
+  .m-auto, .mx-auto {
+    margin: 0 !important;
+  }
+}
+

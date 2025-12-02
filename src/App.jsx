@@ -44,13 +44,109 @@ import {
   CheckCircle,
   AlertCircle,
   PlusCircle,
-  MinusCircle
+  MinusCircle,
+  Truck
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
+
+// API Configuration
+const API_BASE = 'http://localhost:3001/api';
+
+// Componente Login separado y simplificado
+const LoginComponent = ({ handleLogin, loginError, showPassword, setShowPassword }) => {
+  const usernameInputRef = React.useRef(null);
+  const passwordInputRef = React.useRef(null);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const username = usernameInputRef.current.value;
+    const password = passwordInputRef.current.value;
+    handleLogin(username, password);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">COMPURSATIL</h1>
+          <p className="text-gray-600">Sistema de Gestión de Inventarios</p>
+        </div>
+        
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nombre de usuario
+            </label>
+            <input
+              ref={usernameInputRef}
+              type="text"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              placeholder="Ingrese su usuario"
+              defaultValue=""
+              required
+              autoFocus
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Contraseña
+            </label>
+            <div className="relative">
+              <input
+                ref={passwordInputRef}
+                type={showPassword ? "text" : "password"}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12 outline-none"
+                placeholder="Ingrese su contraseña"
+                defaultValue=""
+                required
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setShowPassword(!showPassword);
+                }}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 pointer-events-auto"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
+          
+          {loginError && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+              {loginError}
+            </div>
+          )}
+          
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            Iniciar Sesión
+          </button>
+        </form>
+        
+        <div className="mt-6 text-center text-sm text-gray-600">
+          <p className="font-semibold mb-2">Credenciales de Prueba:</p>
+          <div className="bg-gray-50 rounded p-3 space-y-1.5">
+            <p><span className="font-medium text-blue-600">Gerente:</span> gerente / gerente123</p>
+            <p><span className="font-medium text-green-600">Admin:</span> admin / admin123</p>
+            <p><span className="font-medium text-orange-600">Vendedor:</span> vendedor / venta123</p>
+            <p><span className="font-medium text-purple-600">Soporte:</span> soporte / sop123</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeModule, setActiveModule] = useState('dashboard');
-  const [currentUser, setCurrentUser] = useState({ name: '', role: '' });
+  const [currentUser, setCurrentUser] = useState({ name: '', role: '', token: null });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -58,21 +154,202 @@ const App = () => {
   const [loginError, setLoginError] = useState('');
   const [showReceiptPreview, setShowReceiptPreview] = useState(false);
   const [selectedSaleForReceipt, setSelectedSaleForReceipt] = useState(null);
-  const [currentDate, setCurrentDate] = useState(new Date('2025-10-06T00:00:00'));
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [loadingData, setLoadingData] = useState(true);
+  
+  // Verificar sesión guardada al cargar
+  useEffect(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      try {
+        const user = JSON.parse(savedUser);
+        setCurrentUser(user);
+        setIsLoggedIn(true);
+        loadDataFromAPI(user.token);
+      } catch (e) {
+        console.error('Error al restaurar sesión:', e);
+        localStorage.removeItem('currentUser');
+      }
+    }
+    setLoadingData(false);
+  }, []);
+  
+  // Función para traer datos de la API
+  const loadDataFromAPI = async (token) => {
+    try {
+      setLoadingData(true);
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      // Traer inventario
+      const invRes = await fetch(`${API_BASE}/inventario`, { headers });
+      if (invRes.ok) {
+        const invData = await invRes.json();
+        const processedInventory = (invData.data || []).map((item) => ({
+          id: item.id,
+          brand: item.marca,
+          model: item.modelo,
+          serial: item.numero_serie,
+          ram: item.especificaciones_ram,
+          storage: item.especificaciones_almacenamiento,
+          processor: item.especificaciones_procesador,
+          gpu: item.especificaciones_gpu || '',
+          screen: item.especificaciones_pantalla || '',
+          os: item.especificaciones_so || '',
+          status: item.estado,
+          supplier: item.proveedor_nombre || 'Desconocido',
+          cost: item.costo_unitario,
+          price: item.precio_venta,
+          stock: item.stock,
+          image: item.imagen || 'https://placehold.co/300x200/cccccc/666666?text=No+Image',
+          addedDate: item.fecha_ingreso
+        }));
+        setInventory(processedInventory);
+      }
+      
+      // Traer clientes
+      const clientRes = await fetch(`${API_BASE}/clientes`, { headers });
+      if (clientRes.ok) {
+        const clientData = await clientRes.json();
+        const processedClients = (clientData.data || []).map(client => ({
+          id: client.id,
+          name: client.nombre,
+          document: client.numero_documento,
+          documentType: client.tipo_documento,
+          phone: client.telefono || '',
+          email: client.email || '',
+          address: client.direccion || '',
+          city: client.ciudad || ''
+        }));
+        setCustomers(processedClients);
+      }
+      
+      // Traer ventas
+      const salesRes = await fetch(`${API_BASE}/ventas`, { headers });
+      if (salesRes.ok) {
+        const salesData = await salesRes.json();
+        const processedSales = (salesData.data || []).map(sale => ({
+          id: sale.id,
+          date: sale.fecha,
+          time: sale.hora,
+          customer: sale.cliente_nombre,
+          customerId: sale.cliente_id,
+          items: [],
+          total: sale.total,
+          sellerName: sale.vendedor_nombre,
+          seller: sale.vendedor_nombre,
+          payment: sale.metodo_pago,
+          documentType: sale.tipo_documento,
+          documentNumber: sale.numero_documento,
+          observations: sale.observaciones || ''
+        }));
+        setSales(processedSales);
+      }
+      
+      // Traer garantías
+      const warrantiesRes = await fetch(`${API_BASE}/garantias`, { headers });
+      if (warrantiesRes.ok) {
+        const warrantiesData = await warrantiesRes.json();
+        const processedWarranties = (warrantiesData.data || []).map(warranty => ({
+          id: warranty.id,
+          serial: warranty.numero_serie,
+          customerId: warranty.cliente_id,
+          startDate: warranty.fecha_inicio,
+          endDate: warranty.fecha_fin,
+          status: warranty.estado,
+          saleId: warranty.venta_id,
+          warrantyType: warranty.tipo_garantia,
+          technicalSupportId: warranty.soporte_tecnico_id || null
+        }));
+        setWarranties(processedWarranties);
+      }
+      
+      // Traer casos técnicos
+      const technicalRes = await fetch(`${API_BASE}/soporte`, { headers });
+      if (technicalRes.ok) {
+        const technicalData = await technicalRes.json();
+        const processedCases = (technicalData.data || []).map(tc => ({
+          id: tc.id,
+          serial: tc.numero_serie,
+          customerId: tc.cliente_id,
+          equipmentModel: tc.modelo_equipo,
+          documentNumber: tc.numero_documento,
+          documentType: tc.tipo_documento,
+          issue: tc.problema,
+          diagnosis: tc.diagnostico,
+          actions: tc.acciones_realizadas,
+          status: tc.estado,
+          technician: tc.tecnico,
+          date: tc.fecha,
+          warrantyStartDate: tc.fecha_garantia,
+          supportType: tc.tipo_soporte,
+          firstIntervention: tc.fecha_primera_intervencion,
+          observations: tc.observaciones || ''
+        }));
+        setTechnicalCases(processedCases);
+      }
+      
+      // Traer envíos
+      const shipmentsRes = await fetch(`${API_BASE}/envios`, { headers });
+      if (shipmentsRes.ok) {
+        const shipmentsData = await shipmentsRes.json();
+        console.log('Shipments API response:', shipmentsData);
+        const processedShipments = (shipmentsData.data || []).map(ship => ({
+          id: ship.id,
+          nombre: ship.nombre_cliente || ship.nombre || '',
+          documento: ship.numero_documento || '',
+          telefono: ship.telefono || '',
+          departamento: ship.departamento || '',
+          provincia: ship.provincia || '',
+          distrito: ship.distrito || '',
+          agencia: ship.agencia || '',
+          modalidad: ship.modalidad_envio || ship.modalidad || 'motorizado',
+          costo: ship.costo_envio || ship.costo || 0,
+          clave: ship.clave_seguimiento || ship.clave || '',
+          razon: ship.razon_envio || ship.razon || 'envio',
+          estado: ship.estado || 'Pendiente',
+          fecha: ship.fecha_envio || ship.fecha || new Date().toISOString().split('T')[0]
+        }));
+        console.log('Processed shipments:', processedShipments);
+        setShipments(processedShipments);
+      } else {
+        console.error('Shipments API error:', shipmentsRes.status, shipmentsRes.statusText);
+      }
+      
+      // Traer extras
+      const extrasRes = await fetch(`${API_BASE}/extras`, { headers });
+      if (extrasRes.ok) {
+        const extrasData = await extrasRes.json();
+        const processedExtras = (extrasData.data || []).map(extra => ({
+          id: extra.id,
+          name: extra.nombre,
+          price: extra.precio,
+          category: extra.categoria || ''
+        }));
+        setExtraComponents(processedExtras);
+      }
+      
+      setLoadingData(false);
+    } catch (error) {
+      console.error('Error cargando datos de la API:', error);
+      setLoadingData(false);
+    }
+  };
   
   // Receipt configuration
   const [receiptConfig, setReceiptConfig] = useState({
     companyName: 'COMPURSATIL IMPORTACIONES',
     address: 'Av. Francisco Bolognesi 376 - Lima',
     phone: '987 654 321',
-    ruc: '10078945612'
+    ruc: '10078945612',
+    logo: null
   });
 
   // Mock users for authentication with proper role names
   const mockUsers = [
+    { username: 'gerente', password: 'gerente123', name: 'Gerente', role: 'Gerente' },
     { username: 'admin', password: 'admin123', name: 'Administrador', role: 'Administrador' },
     { username: 'vendedor', password: 'venta123', name: 'Vendedor', role: 'Vendedor' },
-    { username: 'tecnico', password: 'tech123', name: 'Técnico', role: 'Técnico' }
+    { username: 'soporte', password: 'sop123', name: 'Soporte Técnico', role: 'Soporte' }
   ];
 
   // Categories for filtering and management
@@ -85,226 +362,23 @@ const App = () => {
     os: ['Windows 11 Pro', 'Windows 10 Pro', 'Linux Ubuntu 22.04', 'Sin Sistema Operativo']
   });
 
-  // Extra components pricing
-  const [extraComponents, setExtraComponents] = useState([
-    { id: 1, name: '+8GB RAM', price: 100, category: 'ram' },
-    { id: 2, name: '+16GB RAM', price: 200, category: 'ram' },
-    { id: 3, name: 'Upgrade 256GB to 512GB SSD', price: 120, category: 'storage' },
-    { id: 4, name: 'Upgrade 512GB to 1TB SSD', price: 150, category: 'storage' },
-    { id: 5, name: 'NVIDIA GeForce RTX 3060', price: 300, category: 'gpu' },
-    { id: 6, name: 'NVIDIA GeForce RTX 4070', price: 500, category: 'gpu' }
-  ]);
+  // Extra components pricing - fetched from API
+  const [extraComponents, setExtraComponents] = useState([]);
 
   // Mock inventory data with enhanced fields and dates
-  const [inventory, setInventory] = useState([
-    {
-      id: 1,
-      brand: 'Dell',
-      model: 'XPS 13 9310',
-      serial: 'DELL123456',
-      ram: '16GB DDR4',
-      storage: '512GB SSD NVMe',
-      processor: 'Intel Core i7 - 10ma Generación',
-      gpu: 'Gráficos Integrados Intel',
-      screen: '13.3 pulgadas Full HD',
-      os: 'Windows 11 Pro',
-      status: 'Nuevo',
-      supplier: 'Dell Inc. Perú',
-      cost: 2800,
-      price: 4200,
-      stock: 5,
-      image: 'https://placehold.co/300x200/2563eb/white?text=Dell+XPS+13',
-      addedDate: '2024-01-10'
-    },
-    {
-      id: 2,
-      brand: 'HP',
-      model: 'Spectre x360 14',
-      serial: 'HP789012',
-      ram: '8GB DDR4',
-      storage: '256GB SSD NVMe',
-      processor: 'Intel Core i5 - 14ta Generación',
-      gpu: 'Gráficos Integrados Intel',
-      screen: '14 pulgadas Full HD',
-      os: 'Windows 11 Pro',
-      status: 'Reacondicionado',
-      supplier: 'HP Store Lima',
-      cost: 1400,
-      price: 2450,
-      stock: 2,
-      image: 'https://placehold.co/300x200/dc2626/white?text=HP+Spectre',
-      addedDate: '2024-01-12'
-    },
-    {
-      id: 3,
-      brand: 'Lenovo',
-      model: 'ThinkPad X1 Carbon',
-      serial: 'LEN456789',
-      ram: '32GB DDR4',
-      storage: '1TB SSD NVMe',
-      processor: 'Intel Core i7 - 10ma Generación',
-      gpu: 'NVIDIA GeForce RTX 3060',
-      screen: '15.6 pulgadas Full HD',
-      os: 'Windows 10 Pro',
-      status: 'Nuevo',
-      supplier: 'Lenovo Peru S.A.',
-      cost: 3500,
-      price: 5250,
-      stock: 3,
-      image: 'https://placehold.co/300x200/059669/white?text=Lenovo+ThinkPad',
-      addedDate: '2024-01-15'
-    },
-    {
-      id: 4,
-      brand: 'Asus',
-      model: 'ROG Strix G17',
-      serial: 'ASUS987654',
-      ram: '16GB DDR4',
-      storage: '1TB SSD NVMe',
-      processor: 'Intel Core i9 - 12va Generación',
-      gpu: 'NVIDIA GeForce RTX 4070',
-      screen: '17.3 pulgadas 4K',
-      os: 'Windows 11 Pro',
-      status: 'Nuevo',
-      supplier: 'Asus Peru Distribuidor',
-      cost: 4200,
-      price: 6300,
-      stock: 1,
-      image: 'https://placehold.co/300x200/7c3aed/white?text=Asus+ROG',
-      addedDate: '2024-01-18'
-    }
-  ]);
+  const [inventory, setInventory] = useState([]);
 
-  // Mock sales data with extra components
-  const [sales, setSales] = useState([
-    {
-      id: 1,
-      date: '2025-10-05',
-      time: '14:30',
-      customer: 'Juan Pérez',
-      customerId: 1,
-      items: [{ 
-        id: 1, 
-        quantity: 1, 
-        price: 4200, 
-        subtotal: 3559.32, 
-        igv: 640.68,
-        extras: []
-      }],
-      total: 4200,
-      seller: 'María López',
-      payment: 'Efectivo',
-      documentType: 'Boleta',
-      documentNumber: 'B001-000001',
-      observations: 'Cliente solicitó actualización de RAM a 32GB'
-    },
-    {
-      id: 2,
-      date: '2025-10-04',
-      time: '10:15',
-      customer: 'Empresa Tech S.A.C.',
-      customerId: 3,
-      items: [{ 
-        id: 3, 
-        quantity: 1, 
-        price: 5250, 
-        subtotal: 4449.15, 
-        igv: 800.85,
-        extras: [
-          { id: 1, name: '+8GB RAM', price: 100 }
-        ]
-      }],
-      total: 5350,
-      seller: 'Carlos Rodríguez',
-      payment: 'Tarjeta',
-      documentType: 'Factura',
-      documentNumber: 'F001-000001',
-      observations: 'Cliente solicitó upgrade de almacenamiento a 2TB'
-    }
-  ]);
+  // Sales data fetched from API
+  const [sales, setSales] = useState([]);
 
   // Mock customers data
-  const [customers, setCustomers] = useState([
-    {
-      id: 1,
-      name: 'Juan Pérez',
-      document: '12345678',
-      phone: '+51 987 654 321',
-      email: 'juan@email.com',
-      documentType: 'DNI'
-    },
-    {
-      id: 2,
-      name: 'Ana García',
-      document: '87654321',
-      phone: '+51 912 345 678',
-      email: 'ana@email.com',
-      documentType: 'DNI'
-    },
-    {
-      id: 3,
-      name: 'Empresa Tech S.A.C.',
-      document: '20123456789',
-      phone: '+51 999 888 777',
-      email: 'contacto@techsac.com',
-      documentType: 'RUC'
-    }
-  ]);
+  const [customers, setCustomers] = useState([]);
 
-  // Mock warranties data
-  const [warranties, setWarranties] = useState([
-    {
-      id: 1,
-      serial: 'DELL123456',
-      customerId: 1,
-      startDate: '2025-10-05',
-      endDate: '2026-10-05',
-      status: 'Activa',
-      saleId: 1,
-      warrantyType: 'Fabricante',
-      technicalSupportId: null
-    }
-  ]);
+  // Warranties data fetched from API
+  const [warranties, setWarranties] = useState([]);
 
-  // Mock technical cases data
-  const [technicalCases, setTechnicalCases] = useState([
-    {
-      id: 1,
-      serial: 'HP789012',
-      customerId: 2,
-      equipmentModel: 'HP Spectre x360 14',
-      documentNumber: 'B001-000002',
-      documentType: 'Boleta',
-      issue: 'Pantalla no enciende',
-      diagnosis: 'Problema con la fuente de alimentación',
-      actions: 'Reemplazo de adaptador de corriente original',
-      status: 'Entregado',
-      technician: 'Carlos Rodríguez',
-      date: '2025-10-03',
-      warrantyStartDate: '2025-10-03',
-      supportType: 'Garantía',
-      firstIntervention: '2025-10-03',
-      observations: 'Cliente reportó que el equipo no encendía. Se verificó la fuente de alimentación y se reemplazó el adaptador original.'
-    },
-    {
-      id: 2,
-      serial: 'ASUS987654',
-      customerId: 3,
-      equipmentModel: 'Asus ROG Strix G17',
-      documentNumber: 'F001-000002',
-      documentType: 'Factura',
-      issue: 'Sobrecalentamiento',
-      diagnosis: 'Ventiladores obstruidos por polvo',
-      actions: 'Limpieza de ventiladores y reemplazo de pasta térmica',
-      status: 'En reparación',
-      technician: 'María López',
-      date: '2025-10-05',
-      warrantyStartDate: '2025-10-05',
-      supportType: 'Garantía',
-      firstIntervention: '2025-10-05',
-      observations: 'Cliente reportó sobrecalentamiento. Se diagnosticó acumulación de polvo en los ventiladores. Se programó limpieza y reemplazo de pasta térmica.'
-    }
-  ]);
+  // Technical cases data fetched from API
+  const [technicalCases, setTechnicalCases] = useState([]);
 
   // Mock users data
   const [users, setUsers] = useState(mockUsers.map((user, index) => ({
@@ -313,40 +387,68 @@ const App = () => {
     status: 'Activo'
   })));
 
-  // Login handler - Fixed input issue
-  const handleLogin = useCallback((e) => {
-    e.preventDefault();
-    const user = users.find(u => 
-      u.username === loginUsername && 
-      u.password === loginPassword
-    );
-    
-    if (user) {
-      setCurrentUser({ name: user.name, role: user.role });
-      setIsLoggedIn(true);
-      setLoginError('');
-    } else {
-      setLoginError('Credenciales incorrectas');
+  // Shipments state for Shipment Tracking module - fetched from API
+  const [shipments, setShipments] = useState([]);
+  // Comentado: Ya no se necesita form data, modalidad es solo lectura desde API
+  // const [shipmentFormData, setShipmentFormData] = useState({...});
+  // const [showPasswordShipment, setShowPasswordShipment] = useState(false);
+  // const [editingShipmentId, setEditingShipmentId] = useState(null);
+
+  // Login handler - Recibe username y password como parámetros
+  const handleLogin = async (username, password) => {
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        const userData = {
+          name: data.user.nombre,
+          role: data.user.role,
+          username: data.user.username,
+          token: data.token,
+          id: data.user.id
+        };
+        setCurrentUser(userData);
+        setIsLoggedIn(true);
+        setLoginError('');
+        setLoginUsername('');
+        setLoginPassword('');
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        // Cargar datos después del login
+        await loadDataFromAPI(data.token);
+      } else {
+        setLoginError(data.message || 'Error en la autenticación');
+      }
+    } catch (error) {
+      setLoginError('Error de conexión: Backend en puerto 3001 no disponible');
+      console.error('Login error:', error);
     }
-  }, [loginUsername, loginPassword, users]);
+  };
 
-  // Fixed input handlers
-  const handleUsernameChange = useCallback((e) => {
-    setLoginUsername(e.target.value);
-  }, []);
-
-  const handlePasswordChange = useCallback((e) => {
-    setLoginPassword(e.target.value);
-  }, []);
+  // Fixed input handlers - Simple direct update without useCallback
+  // Ahora se manejan directamente en LoginComponent con onChange inline
 
   // Logout handler
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setCurrentUser({ name: '', role: '' });
+    setCurrentUser({ name: '', role: '', token: null });
     setActiveModule('dashboard');
     setLoginUsername('');
     setLoginPassword('');
     setLoginError('');
+    setInventory([]);
+    setCustomers([]);
+    setSales([]);
+    setWarranties([]);
+    setTechnicalCases([]);
+    setShipments([]);
+    setExtraComponents([]);
+    localStorage.removeItem('currentUser');
   };
 
   // CRUD Operations
@@ -545,17 +647,17 @@ const App = () => {
   };
 
   const modules = [
-    { id: 'dashboard', name: 'Dashboard', icon: BarChart3, roles: ['Administrador', 'Vendedor', 'Técnico'] },
-    { id: 'inventory', name: 'Inventario', icon: Package, roles: ['Administrador', 'Vendedor'] },
-    { id: 'sales', name: 'Ventas', icon: ShoppingBag, roles: ['Administrador', 'Vendedor'] },
-    { id: 'customers', name: 'Clientes', icon: Users, roles: ['Administrador', 'Vendedor'] },
-    { id: 'warranties', name: 'Garantías', icon: FileCheck, roles: ['Administrador', 'Vendedor', 'Técnico'] },
-    { id: 'technical', name: 'Soporte Técnico', icon: Wrench, roles: ['Administrador', 'Técnico'] },
-    { id: 'reports', name: 'Reportes', icon: FileText, roles: ['Administrador'] },
-    { id: 'users', name: 'Usuarios', icon: Shield, roles: ['Administrador'] },
-    { id: 'categories', name: 'Categorías', icon: Settings, roles: ['Administrador'] },
-    { id: 'receiptConfig', name: 'Config. Recibo', icon: FileText, roles: ['Administrador'] },
-    { id: 'supportTracking', name: 'Seguimiento Soporte', icon: Clock, roles: ['Vendedor', 'Técnico'] }
+    { id: 'dashboard', name: 'Dashboard', icon: BarChart3, roles: ['Gerente', 'Administrador', 'Vendedor', 'Soporte'] },
+    { id: 'inventory', name: 'Inventario', icon: Package, roles: ['Gerente', 'Administrador', 'Vendedor'] },
+    { id: 'sales', name: 'Ventas', icon: ShoppingBag, roles: ['Gerente', 'Administrador', 'Vendedor'] },
+    { id: 'customers', name: 'Clientes', icon: Users, roles: ['Gerente', 'Administrador', 'Vendedor'] },
+    { id: 'technical', name: 'Soporte Técnico', icon: Wrench, roles: ['Gerente', 'Soporte'] },
+    { id: 'shipmentTracking', name: 'Envíos', icon: Truck, roles: ['Gerente', 'Administrador', 'Vendedor'] },
+    { id: 'reports', name: 'Reportes', icon: FileText, roles: ['Gerente'] },
+    { id: 'users', name: 'Usuarios', icon: Shield, roles: ['Gerente'] },
+    { id: 'categories', name: 'Categorías', icon: Settings, roles: ['Gerente'] },
+    { id: 'receiptConfig', name: 'Config. Recibo', icon: FileText, roles: ['Gerente'] },
+    { id: 'supportTracking', name: 'Seguimiento Soporte', icon: Clock, roles: ['Gerente', 'Administrador', 'Vendedor', 'Soporte'] }
   ];
 
   const filteredModules = modules.filter(module => 
@@ -563,7 +665,7 @@ const App = () => {
   );
 
   const Sidebar = () => (
-    <div className={`bg-gray-800 text-white min-h-screen transition-all duration-300 flex flex-col ${
+    <div className={`bg-gray-800 text-white min-h-screen transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen ${
       sidebarCollapsed ? 'w-16' : 'w-64'
     }`}>
       <div className="p-4 border-b border-gray-700 flex items-center justify-between">
@@ -584,7 +686,7 @@ const App = () => {
         {sidebarCollapsed && (
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white w-full flex justify-center"
           >
             <Menu size={24} />
           </button>
@@ -592,30 +694,30 @@ const App = () => {
       </div>
       
       <div className="flex-1 overflow-y-auto">
-      <nav className="p-4">
-        {filteredModules.map((module) => {
-          const Icon = module.icon;
-          return (
-            <button
-              key={module.id}
-              onClick={() => setActiveModule(module.id)}
-              className={`w-full flex items-center gap-3 p-3 rounded-lg mb-2 transition-colors ${
-                activeModule === module.id 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-300 hover:bg-gray-700'
-              } ${sidebarCollapsed ? 'justify-center px-0' : ''}`}
-              title={sidebarCollapsed ? module.name : ''}
-            >
-              <Icon size={20} />
-              {!sidebarCollapsed && module.name}
-            </button>
-          );
-        })}
-      </nav>
+        <nav className="p-4">
+          {filteredModules.map((module) => {
+            const Icon = module.icon;
+            return (
+              <button
+                key={module.id}
+                onClick={() => setActiveModule(module.id)}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg mb-2 transition-colors ${
+                  activeModule === module.id 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-300 hover:bg-gray-700'
+                } ${sidebarCollapsed ? 'justify-center px-0' : ''}`}
+                title={sidebarCollapsed ? module.name : ''}
+              >
+                <Icon size={20} />
+                {!sidebarCollapsed && module.name}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
-      {!sidebarCollapsed && (
-        <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-gray-700">
+        {!sidebarCollapsed && (
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-gray-600 rounded-full p-2">
               <User size={20} />
@@ -625,87 +727,29 @@ const App = () => {
               <p className="text-xs text-gray-400">{currentUser.role}</p>
             </div>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-gray-300 hover:text-white w-full p-2 rounded"
-          >
-            <LogOut size={16} />
-            Cerrar Sesión
-          </button>
-        </div>
-      )}
-    </div>
-  );
-
-  const Login = () => (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">COMPURSATIL</h1>
-          <p className="text-gray-600">Sistema de Gestión de Inventarios</p>
-        </div>
-        
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nombre de usuario
-            </label>
-            <input
-              type="text"
-              value={loginUsername}
-              onChange={handleUsernameChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Ingrese su usuario"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Contraseña
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={loginPassword}
-                onChange={handlePasswordChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
-                placeholder="Ingrese su contraseña"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-          
-          {loginError && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-              {loginError}
-            </div>
-          )}
-          
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            Iniciar Sesión
-          </button>
-        </form>
-        
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Credenciales de prueba:</p>
-          <p className="font-medium">Admin: admin/admin123</p>
-          <p className="font-medium">Vendedor: vendedor/venta123</p>
-          <p className="font-medium">Técnico: tecnico/tech123</p>
-        </div>
+        )}
+        <button 
+          onClick={handleLogout}
+          className={`flex items-center gap-2 text-gray-300 hover:text-white w-full p-2 rounded transition-colors hover:bg-gray-700 ${sidebarCollapsed ? 'justify-center' : ''}`}
+          title={sidebarCollapsed ? 'Cerrar Sesión' : ''}
+        >
+          <LogOut size={16} />
+          {!sidebarCollapsed && 'Cerrar Sesión'}
+        </button>
       </div>
     </div>
   );
+
+  const Login = () => {
+    return (
+      <LoginComponent
+        handleLogin={handleLogin}
+        loginError={loginError}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+      />
+    );
+  };
 
   const Dashboard = () => {
     const totalInventoryValue = inventory.reduce((sum, item) => sum + (item.cost * item.stock), 0);
@@ -715,21 +759,27 @@ const App = () => {
     const recentSales = sales.slice(-3).reverse();
     const recentTechCases = technicalCases.slice(-3).reverse();
     
-    // Generate some sample data for charts
-    const salesData = [
-      { month: 'Ene', sales: 15000 },
-      { month: 'Feb', sales: 18000 },
-      { month: 'Mar', sales: 22000 },
-      { month: 'Abr', sales: 25000 },
-      { month: 'May', sales: 28000 },
-      { month: 'Jun', sales: 30000 },
-      { month: 'Jul', sales: 32000 },
-      { month: 'Ago', sales: 35000 },
-      { month: 'Sep', sales: 38000 },
-      { month: 'Oct', sales: 40000 },
-      { month: 'Nov', sales: 42000 },
-      { month: 'Dic', sales: 45000 }
-    ];
+    // Calculate sales data from real sales
+    const salesByMonth = {};
+    sales.forEach(sale => {
+      const date = new Date(sale.date);
+      const monthIndex = date.getMonth();
+      const monthName = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'][monthIndex];
+      
+      if (!salesByMonth[monthName]) {
+        salesByMonth[monthName] = 0;
+      }
+      salesByMonth[monthName] += sale.total;
+    });
+    
+    // Generate complete month data with actual sales
+    const allMonths = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const salesData = allMonths.map(month => ({
+      month,
+      sales: salesByMonth[month] || 0
+    }));
+    
+    const maxSales = Math.max(...salesData.map(d => d.sales), 45000);
     
     const productDistribution = inventory.reduce((acc, item) => {
       const existing = acc.find(i => i.brand === item.brand);
@@ -793,26 +843,18 @@ const App = () => {
               <BarChart2 size={16} />
               Ventas por Mes
             </h3>
-            <div className="h-48 flex items-end justify-between">
-              {salesData.slice(0, 4).map((data, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div className="w-8 bg-blue-500 rounded-t" style={{height: `${(data.sales / 45000) * 100}%`}}></div>
-                  <span className="text-xs mt-1">{data.month}</span>
-                </div>
-              ))}
-              {salesData.slice(4, 8).map((data, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div className="w-8 bg-green-500 rounded-t" style={{height: `${(data.sales / 45000) * 100}%`}}></div>
-                  <span className="text-xs mt-1">{data.month}</span>
-                </div>
-              ))}
-              {salesData.slice(8, 12).map((data, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div className="w-8 bg-purple-500 rounded-t" style={{height: `${(data.sales / 45000) * 100}%`}}></div>
+            <div className="h-48 flex items-end justify-between gap-1">
+              {salesData.map((data, index) => (
+                <div key={index} className="flex flex-col items-center flex-1">
+                  <div className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" 
+                    style={{height: `${(data.sales / maxSales) * 100}%`, minHeight: data.sales > 0 ? '4px' : '0px'}}
+                    title={`${data.month}: S/. ${data.sales.toLocaleString('es-PE')}`}
+                  ></div>
                   <span className="text-xs mt-1">{data.month}</span>
                 </div>
               ))}
             </div>
+            <p className="text-xs text-gray-600 mt-2">Total de ventas: S/. {totalSalesValue.toLocaleString('es-PE')}</p>
           </div>
 
           <div className="bg-white p-4 rounded-lg shadow">
@@ -982,33 +1024,38 @@ const App = () => {
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Gestión de Inventario - COMPURSATIL</h2>
-          <button 
-            onClick={() => {
-              setShowAddForm(true);
-              setEditingItem(null);
-              setFormData({
-                brand: '',
-                model: '',
-                serial: '',
-                ram: '',
-                storage: '',
-                processor: '',
-                gpu: '',
-                screen: '',
-                os: '',
-                status: 'Nuevo',
-                supplier: '',
-                cost: '',
-                price: '',
-                stock: '',
-                image: ''
-              });
-            }}
-            className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-blue-700"
-          >
-            <Plus size={14} />
-            Nuevo Equipo
-          </button>
+          {['Administrador', 'Gerente'].includes(currentUser.role) && (
+            <button 
+              onClick={() => {
+                setShowAddForm(true);
+                setEditingItem(null);
+                setFormData({
+                  brand: '',
+                  model: '',
+                  serial: '',
+                  ram: '',
+                  storage: '',
+                  processor: '',
+                  gpu: '',
+                  screen: '',
+                  os: '',
+                  status: 'Nuevo',
+                  supplier: '',
+                  cost: '',
+                  price: '',
+                  stock: '',
+                  image: ''
+                });
+              }}
+              className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-blue-700"
+            >
+              <Plus size={14} />
+              Nuevo Equipo
+            </button>
+          )}
+          {currentUser.role === 'Vendedor' && (
+            <span className="text-gray-500 text-sm">Modo visualización</span>
+          )}
         </div>
 
         <div className="mb-4 flex gap-2">
@@ -1292,18 +1339,27 @@ const App = () => {
                   <td className="px-3 py-2 text-gray-500">{item.addedDate}</td>
                   <td className="px-3 py-2">
                     <div className="flex gap-1">
-                      <button 
-                        onClick={() => handleEdit(item)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit size={14} />
-                      </button>
-                      <button 
-                        onClick={() => deleteInventoryItem(item.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {['Administrador', 'Gerente'].includes(currentUser.role) && (
+                        <>
+                          <button 
+                            onClick={() => handleEdit(item)}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="Solo Administrador y Gerente pueden editar"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button 
+                            onClick={() => deleteInventoryItem(item.id)}
+                            className="text-red-600 hover:text-red-800"
+                            title="Solo Administrador y Gerente pueden eliminar"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
+                      {currentUser.role === 'Vendedor' && (
+                        <span className="text-gray-400 text-xs">Solo lectura</span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -1317,8 +1373,11 @@ const App = () => {
 
   const SalesModule = () => {
     const [filterDate, setFilterDate] = useState('');
+    const [searchSalesTerm, setSearchSalesTerm] = useState('');
     const [showSaleForm, setShowSaleForm] = useState(false);
     const [editingSale, setEditingSale] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const [saleFormData, setSaleFormData] = useState({
       customerId: '',
       customerName: '',
@@ -1350,7 +1409,10 @@ const App = () => {
     const [selectedItemIndex, setSelectedItemIndex] = useState(-1);
 
     const filteredSales = sales.filter(sale =>
-      !filterDate || sale.date === filterDate
+      (!filterDate || sale.date === filterDate) &&
+      (sale.customer.toLowerCase().includes(searchSalesTerm.toLowerCase()) ||
+       sale.documentNumber.toLowerCase().includes(searchSalesTerm.toLowerCase()) ||
+       sale.seller.toLowerCase().includes(searchSalesTerm.toLowerCase()))
     );
 
     const getFilteredProducts = () => {
@@ -1369,9 +1431,11 @@ const App = () => {
       const newItems = productsToAdd.map(product => ({
         id: product.id,
         quantity: 1,
-        price: product.price,
-        subtotal: calculateIGV(product.price).subtotal,
-        igv: calculateIGV(product.price).igv,
+        price: parseFloat(product.price),
+        equipmentBasePrice: parseFloat(product.price),
+        extrasPrice: 0,
+        subtotal: calculateIGV(parseFloat(product.price)).subtotal,
+        igv: calculateIGV(parseFloat(product.price)).igv,
         extras: []
       }));
       
@@ -1390,10 +1454,13 @@ const App = () => {
 
     const updateItemPrice = (index, newPrice) => {
       const updatedItems = [...saleFormData.items];
+      const priceValue = parseFloat(newPrice) || 0;
       updatedItems[index] = {
         ...updatedItems[index],
-        price: parseFloat(newPrice),
-        ...calculateIGV(parseFloat(newPrice))
+        price: priceValue,
+        equipmentBasePrice: priceValue,
+        extrasPrice: 0,
+        ...calculateIGV(priceValue)
       };
       setSaleFormData(prev => ({ ...prev, items: updatedItems }));
     };
@@ -1408,19 +1475,37 @@ const App = () => {
       const updatedItems = [...saleFormData.items];
       const currentItem = updatedItems[itemIndex];
       
-      // Add extra to item
-      const newExtras = [...(currentItem.extras || []), extra];
-      const newPrice = (currentItem.price || 0) + extra.price;
+      // Mantener precio base del equipo original (asegurar que es número)
+      const equipmentBasePrice = parseFloat(currentItem.equipmentBasePrice) || parseFloat(currentItem.price) || 0;
+      
+      // Agregar extra a la lista
+      const newExtras = [...(currentItem.extras || [])];
+      // Verificar si el extra ya existe
+      const existingExtraIndex = newExtras.findIndex(e => e.id === extra.id);
+      if (existingExtraIndex >= 0) {
+        newExtras[existingExtraIndex].quantity = (newExtras[existingExtraIndex].quantity || 1) + 1;
+      } else {
+        newExtras.push({ ...extra, quantity: 1 });
+      }
+      
+      // Calcular precio total = equipo + sum(extras)
+      const extrasTotal = newExtras.reduce((sum, e) => sum + (parseFloat(e.price) || 0) * (parseFloat(e.quantity) || 1), 0);
+      const totalPrice = equipmentBasePrice + extrasTotal;
+      
+      const igvData = calculateIGV(totalPrice);
       
       updatedItems[itemIndex] = {
         ...currentItem,
-        price: newPrice,
+        price: totalPrice,
+        equipmentBasePrice: equipmentBasePrice,
+        extrasPrice: extrasTotal,
         extras: newExtras,
-        ...calculateIGV(newPrice)
+        subtotal: igvData.subtotal,
+        igv: igvData.igv
       };
       
       // Recalculate total
-      const newTotal = updatedItems.reduce((sum, it) => sum + (it.price || 0), 0);
+      const newTotal = updatedItems.reduce((sum, it) => sum + (parseFloat(it.price) || 0), 0);
       setSaleFormData(prev => ({ ...prev, items: updatedItems, total: newTotal }));
     };
 
@@ -1429,19 +1514,29 @@ const App = () => {
       const currentItem = updatedItems[itemIndex];
       
       // Remove extra from item
-      const removedExtra = currentItem.extras[extraIndex];
       const newExtras = currentItem.extras.filter((_, idx) => idx !== extraIndex);
-      const newPrice = (currentItem.price || 0) - (removedExtra?.price || 0);
+      
+      // Mantener el precio base del equipo (asegurar que es número)
+      const equipmentBasePrice = parseFloat(currentItem.equipmentBasePrice) || parseFloat(currentItem.price) || 0;
+      
+      // Recalcular precio total
+      const extrasTotal = newExtras.reduce((sum, e) => sum + (parseFloat(e.price) || 0) * (parseFloat(e.quantity) || 1), 0);
+      const totalPrice = equipmentBasePrice + extrasTotal;
+      
+      const igvData = calculateIGV(totalPrice);
       
       updatedItems[itemIndex] = {
         ...currentItem,
-        price: newPrice,
+        price: totalPrice,
+        equipmentBasePrice: equipmentBasePrice,
+        extrasPrice: extrasTotal,
         extras: newExtras,
-        ...calculateIGV(newPrice)
+        subtotal: igvData.subtotal,
+        igv: igvData.igv
       };
       
       // Recalculate total
-      const newTotal = updatedItems.reduce((sum, it) => sum + (it.price || 0), 0);
+      const newTotal = updatedItems.reduce((sum, it) => sum + (parseFloat(it.price) || 0), 0);
       setSaleFormData(prev => ({ ...prev, items: updatedItems, total: newTotal }));
     };
 
@@ -1497,7 +1592,9 @@ const App = () => {
           ...saleFormData,
           customer: customer.name,
           total,
-          documentNumber: saleFormData.documentNumber
+          documentNumber: saleFormData.documentNumber,
+          sellerName: currentUser.name,
+          sellerId: currentUser.username
         };
         
         if (editingSale) {
@@ -1561,105 +1658,191 @@ const App = () => {
 
     const ReceiptPreview = ({ sale, onClose }) => {
       const customer = customers.find(c => c.id === parseInt(sale.customerId));
+      const subtotal = sale.items.reduce((sum, item) => sum + item.subtotal, 0);
+      const igv = sale.items.reduce((sum, item) => sum + item.igv, 0);
       
       return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
-            <div className="p-4">
-              {/* A4 Format Receipt - 210mm x 297mm */}
-              <div className="bg-white p-6 border border-gray-300 mx-auto" style={{ width: '230mm', minHeight: '297mm' }}>
-                <div className="text-center mb-4">
-                  <h2 className="text-xl font-bold text-blue-800">{receiptConfig.companyName}</h2>
-                  <p className="text-sm text-gray-600">{receiptConfig.address}</p>
-                  <p className="text-sm text-gray-600">Teléfono: {receiptConfig.phone}</p>
-                  <p className="text-sm text-gray-600 mt-1">RUC: {receiptConfig.ruc}</p>
-                </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 receipt-modal-wrapper">
+          <div className="bg-white rounded shadow-xl w-full max-w-4xl max-h-[95vh] overflow-y-auto flex flex-col receipt-modal-content">
+            <div className="flex-1 overflow-y-auto receipt-container">
+              {/* A4 Format Receipt */}
+              <div className="bg-white p-8 mx-auto receipt-document" style={{ width: '210mm', maxWidth: '100%', minHeight: '297mm', fontFamily: 'Arial, sans-serif' }}>
                 
-                <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                  <div>
-                    <p><strong>Cliente:</strong> {sale.customer}</p>
-                    <p><strong>{customer?.documentType === 'RUC' ? 'RUC' : 'DNI'}:</strong> {customer?.document || 'N/A'}</p>
-                  </div>
-                  <div className="text-right">
-                    <p><strong>Fecha:</strong> {sale.date}</p>
-                    <p><strong>Hora:</strong> {sale.time}</p>
-                    <p><strong>{sale.documentType}:</strong> {sale.documentNumber}</p>
-                  </div>
-                </div>
-                
-                <div className="border-t border-b py-1 mb-3">
-                  <div className="grid grid-cols-12 gap-1 text-xs font-semibold text-gray-700">
-                    <div className="col-span-2">Cant.</div>
-                    <div className="col-span-4">Descripción</div>
-                    <div className="col-span-2 text-right">P.U.</div>
-                    <div className="col-span-2 text-right">Subtotal</div>
-                    <div className="col-span-2 text-right">IGV</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-1 mb-3">
-                  {sale.items.map((item, index) => {
-                    const invItem = inventory.find(i => i.id === item.id);
-                    return (
-                      <div key={index} className="grid grid-cols-12 gap-1 text-sm">
-                        <div className="col-span-2">{item.quantity}</div>
-                        <div className="col-span-4">
-                          {invItem?.brand} {invItem?.model}
-                          <div className="text-xs text-gray-500">
-                            {invItem?.processor} • {invItem?.ram}
-                          </div>
-                          {item.extras && item.extras.length > 0 && (
-                            <div className="mt-0.5 text-xs text-gray-600">
-                              Extras: {item.extras.map(extra => extra.name).join(', ')}
-                            </div>
+                {/* Header */}
+                <div className="mb-4 pb-4 border-b-4 border-gray-800">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    {/* Left: Logo and Company Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start gap-4">
+                        {/* Logo */}
+                        <div>
+                          {receiptConfig.logo && (
+                            <img 
+                              src={receiptConfig.logo} 
+                              alt="Logo" 
+                              style={{ maxHeight: '80px', maxWidth: '120px', objectFit: 'contain' }}
+                            />
                           )}
                         </div>
-                        <div className="col-span-2 text-right">S/. {item.price.toLocaleString('es-PE')}</div>
-                        <div className="col-span-2 text-right">S/. {item.subtotal.toLocaleString('es-PE')}</div>
-                        <div className="col-span-2 text-right">S/. {item.igv.toLocaleString('es-PE')}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                <div className="border-t pt-2">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <p><strong>Total Subtotal:</strong> S/. {sale.items.reduce((sum, item) => sum + item.subtotal, 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}</p>
-                      <p><strong>Total IGV (18%):</strong> S/. {sale.items.reduce((sum, item) => sum + item.igv, 0).toLocaleString('es-PE', { minimumFractionDigits: 2 })}</p>
-                      {sale.observations && (
-                        <div className="mt-1">
-                          <p><strong>Observaciones:</strong> {sale.observations}</p>
+                        
+                        {/* Company Info */}
+                        <div>
+                          <h1 className="text-2xl font-bold text-gray-800">{receiptConfig.companyName}</h1>
+                          <p className="text-xs text-gray-600">{receiptConfig.address}</p>
+                          <p className="text-xs text-gray-600">Tel: {receiptConfig.phone}</p>
                         </div>
-                      )}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-base font-bold">TOTAL: S/. {sale.total.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</p>
+                    
+                    {/* Right: Document Type and RUC */}
+                    <div className="text-center border-2 border-gray-800 p-3 flex-shrink-0" style={{ width: '200px' }}>
+                      <p className="text-sm font-bold text-gray-800">{sale.documentType.toUpperCase()}</p>
+                      <p className="text-sm font-bold text-gray-800">DE VENTA</p>
+                      <p className="text-xs text-gray-600">ELECTRÓNICA</p>
+                      <hr className="my-1" />
+                      <p className="text-xs font-bold">RUC: {receiptConfig.ruc}</p>
+                      <p className="text-sm font-bold text-gray-800 mt-1">Nº {sale.documentNumber}</p>
                     </div>
                   </div>
                 </div>
-                
-                <div className="mt-6 text-center text-xs text-gray-500">
-                  <p>Gracias por su compra</p>
-                  <p>Garantía: 12 meses</p>
-                  <p className="mt-2">COMPURSATIL IMPORTACIONES - Av. Francisco Bolognesi 376</p>
+
+                {/* Customer and Date Info */}
+                <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                  <div>
+                    <div className="mb-2">
+                      <label className="text-xs font-bold text-gray-600">Cliente:</label>
+                      <p className="text-sm font-semibold">{sale.customer}</p>
+                    </div>
+                    <div className="mb-2">
+                      <label className="text-xs font-bold text-gray-600">Dirección:</label>
+                      <p className="text-xs">{customer?.phone || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-600">{customer?.documentType === 'RUC' ? 'RUC' : 'DNI'}:</label>
+                      <p className="text-xs">{customer?.document || 'N/A'}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="mb-2">
+                      <label className="text-xs font-bold text-gray-600">Fecha de emisión:</label>
+                      <p className="text-sm">{sale.date}</p>
+                    </div>
+                    <div className="mb-2">
+                      <label className="text-xs font-bold text-gray-600">Hora:</label>
+                      <p className="text-sm">{sale.time}</p>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-600">Vendedor:</label>
+                      <p className="text-sm">{sale.seller}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Observaciones */}
+                {sale.observations && (
+                  <div className="mb-4 p-2 bg-gray-50 border border-gray-300 rounded text-xs">
+                    <p><strong>Observaciones:</strong> {sale.observations}</p>
+                  </div>
+                )}
+
+                {/* Items Table */}
+                <div className="mb-4">
+                  <table className="w-full border border-gray-400 text-xs">
+                    <thead>
+                      <tr className="bg-gray-800 text-white">
+                        <th className="border border-gray-400 px-2 py-1 text-center">CANT.</th>
+                        <th className="border border-gray-400 px-2 py-1 text-left">DESCRIPCIÓN</th>
+                        <th className="border border-gray-400 px-2 py-1 text-right w-20">PRECIO UNIT.</th>
+                        <th className="border border-gray-400 px-2 py-1 text-right w-20">EXTRAS</th>
+                        <th className="border border-gray-400 px-2 py-1 text-right w-24">IMPORTE (Inc. IGV)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sale.items.map((item, index) => {
+                        const invItem = inventory.find(i => i.id === item.id);
+                        const equipmentPrice = parseFloat(item.equipmentBasePrice) || parseFloat(item.price) || 0;
+                        const extrasPrice = parseFloat(item.extrasPrice) || 0;
+                        const totalPrice = parseFloat(item.price) || 0;
+                        
+                        return (
+                          <tr key={index} className="border-b border-gray-400">
+                            <td className="border border-gray-400 px-2 py-1 text-center">{item.quantity}</td>
+                            <td className="border border-gray-400 px-2 py-1">
+                              <div className="font-semibold">{invItem?.brand} {invItem?.model}</div>
+                              <div className="text-xs text-gray-600">{invItem?.processor}, {invItem?.ram}, {invItem?.storage}</div>
+                              {item.extras && item.extras.length > 0 && (
+                                <div className="text-xs text-gray-600 mt-1">
+                                  <strong>Extras:</strong> {item.extras.map(e => e.name).join(', ')}
+                                </div>
+                              )}
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1 text-right">S/. {equipmentPrice.toFixed(2)}</td>
+                            <td className="border border-gray-400 px-2 py-1 text-right">
+                              {extrasPrice > 0 ? (
+                                <span className="text-blue-600 font-semibold">S/. {extrasPrice.toFixed(2)}</span>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </td>
+                            <td className="border border-gray-400 px-2 py-1 text-right font-semibold">S/. {totalPrice.toFixed(2)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Totals */}
+                <div className="mb-4">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-xs text-gray-600">Forma de pago:</p>
+                      <p className="font-semibold">{sale.payment}</p>
+                    </div>
+                    <div className="text-right space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-xs font-semibold">OP. GRAVADA (S/):</span>
+                        <span className="font-semibold">
+                          {subtotal.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-xs font-semibold">TOTAL IGV (S/):</span>
+                        <span className="font-semibold">
+                          {igv.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      <div className="flex justify-between border-t-2 border-gray-800 pt-1 text-base">
+                        <span className="font-bold">IMPORTE TOTAL (S/):</span>
+                        <span className="font-bold text-lg">
+                          {sale.total.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="text-center text-xs text-gray-600 pt-4 border-t-2 border-gray-400">
+                  <p className="mb-1">Representación impresa de <strong>{sale.documentType.toUpperCase()} DE VENTA ELECTRÓNICA</strong></p>
+                  <p className="text-xs">Autorizado por Resolución de SUNAT</p>
+                  <p className="mt-2 font-semibold">Gracias por su compra</p>
                 </div>
               </div>
             </div>
             
-            <div className="px-4 py-2 bg-gray-50 flex justify-end gap-2">
+            <div className="px-4 py-3 bg-gray-50 flex justify-end gap-2 border-t sticky bottom-0">
               <button
                 onClick={onClose}
-                className="px-3 py-1.5 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded text-sm hover:bg-gray-400 font-medium"
               >
                 Cerrar
               </button>
               <button
                 onClick={() => {
                   window.print();
-                  onClose();
                 }}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                className="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 font-medium"
               >
                 Imprimir
               </button>
@@ -1728,6 +1911,7 @@ const App = () => {
           <h2 className="text-xl font-bold">Gestión de Ventas - COMPURSATIL</h2>
           <button 
             onClick={() => {
+              const now = new Date();
               setShowSaleForm(true);
               setEditingSale(null);
               setSaleFormData({
@@ -1741,8 +1925,8 @@ const App = () => {
                 payment: 'Efectivo',
                 documentType: 'Boleta',
                 documentNumber: '',
-                date: currentDate.toISOString().split('T')[0],
-                time: currentDate.toLocaleTimeString(),
+                date: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString('es-PE'),
                 observations: ''
               });
             }}
@@ -1761,6 +1945,16 @@ const App = () => {
               className="pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-sm"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
+            />
+          </div>
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+            <input
+              type="text"
+              placeholder="Buscar por cliente, documento o vendedor..."
+              className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-sm"
+              value={searchSalesTerm}
+              onChange={(e) => setSearchSalesTerm(e.target.value)}
             />
           </div>
         </div>
@@ -1929,6 +2123,10 @@ const App = () => {
                       <div className="space-y-2">
                         {saleFormData.items.map((item, index) => {
                           const invItem = inventory.find(i => i.id === item.id);
+                          const equipmentPrice = parseFloat(item.equipmentBasePrice) || parseFloat(item.price) || 0;
+                          const extrasPrice = parseFloat(item.extrasPrice) || 0;
+                          const totalPrice = parseFloat(item.price) || 0;
+                          
                           return (
                             <div key={index} className="border rounded p-2 bg-gray-50">
                               <div className="grid grid-cols-12 gap-1 items-center">
@@ -1953,13 +2151,55 @@ const App = () => {
                                   />
                                 </div>
                                 <div className="col-span-2">
-                                  <input
-                                    type="number"
-                                    step="0.01"
-                                    value={item.price}
-                                    onChange={(e) => updateItemPrice(index, e.target.value)}
-                                    className="w-full border rounded p-0.5 text-xs"
-                                  />
+                                  <div className="text-xs space-y-1">
+                                    <div>
+                                      <label className="text-gray-600 text-xs block mb-0.5">Equipo</label>
+                                      <input
+                                        type="number"
+                                        step="0.01"
+                                        value={equipmentPrice}
+                                        onChange={(e) => {
+                                          const updatedItems = [...saleFormData.items];
+                                          const newEquipPrice = parseFloat(e.target.value) || 0;
+                                          const extrasTotal = updatedItems[index].extrasPrice || 0;
+                                          const totalPriceNew = newEquipPrice + extrasTotal;
+                                          const igvData = calculateIGV(totalPriceNew);
+                                          updatedItems[index] = {
+                                            ...updatedItems[index],
+                                            price: totalPriceNew,
+                                            equipmentBasePrice: newEquipPrice,
+                                            ...igvData
+                                          };
+                                          setSaleFormData(prev => ({ ...prev, items: updatedItems }));
+                                        }}
+                                        className="w-full border rounded p-0.5 text-xs font-medium"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-gray-600 text-xs block mb-0.5">Extras</label>
+                                      <input
+                                        type="number"
+                                        step="0.01"
+                                        value={extrasPrice}
+                                        onChange={(e) => {
+                                          const updatedItems = [...saleFormData.items];
+                                          const newExtrasPrice = parseFloat(e.target.value) || 0;
+                                          const equipPrice = updatedItems[index].equipmentBasePrice || 0;
+                                          const totalPriceNew = equipPrice + newExtrasPrice;
+                                          const igvData = calculateIGV(totalPriceNew);
+                                          updatedItems[index] = {
+                                            ...updatedItems[index],
+                                            price: totalPriceNew,
+                                            extrasPrice: newExtrasPrice,
+                                            ...igvData
+                                          };
+                                          setSaleFormData(prev => ({ ...prev, items: updatedItems }));
+                                        }}
+                                        className="w-full border rounded p-0.5 text-xs font-medium text-blue-600"
+                                      />
+                                    </div>
+                                    <div className="font-medium text-blue-600 pt-0.5 border-t pt-1">Total: S/. {totalPrice.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                  </div>
                                 </div>
                                 <div className="col-span-2 text-right text-xs">
                                   <div>S/. {item.subtotal.toLocaleString('es-PE')}</div>
@@ -1997,7 +2237,7 @@ const App = () => {
                                   <div className="flex flex-wrap gap-1">
                                     {item.extras.map((extra, extraIndex) => (
                                       <div key={extraIndex} className="bg-blue-100 text-blue-800 text-xs px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                                        <span>{extra.name}</span>
+                                        <span>{extra.name} (S/. {parseFloat(extra.price).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})</span>
                                         <button
                                           type="button"
                                           onClick={() => removeExtraFromItem(index, extraIndex)}
@@ -2019,29 +2259,31 @@ const App = () => {
                     )}
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Fecha y Hora
                       </label>
-                      <div className="flex gap-1">
+                      <div className="grid grid-cols-2 gap-1">
                         <input
                           type="date"
                           value={saleFormData.date}
                           onChange={(e) => setSaleFormData({...saleFormData, date: e.target.value})}
-                          className="border p-1.5 rounded w-full text-sm"
+                          className="border p-1.5 rounded text-sm"
                           required
                         />
                         <input
                           type="time"
                           value={saleFormData.time}
                           onChange={(e) => setSaleFormData({...saleFormData, time: e.target.value})}
-                          className="border p-1.5 rounded w-full text-sm"
+                          className="border p-1.5 rounded text-sm"
                           required
                         />
                       </div>
                     </div>
-                    
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Tipo de Documento
@@ -2050,10 +2292,11 @@ const App = () => {
                         value={saleFormData.documentType}
                         onChange={(e) => {
                           const newType = e.target.value;
+                          const newDocNumber = editingSale ? saleFormData.documentNumber : generateDocumentNumber(newType);
                           setSaleFormData(prev => ({
                             ...prev,
                             documentType: newType,
-                            documentNumber: prev.documentNumber || generateDocumentNumber(newType)
+                            documentNumber: newDocNumber
                           }));
                         }}
                         className="border p-1.5 rounded w-full text-sm"
@@ -2065,21 +2308,30 @@ const App = () => {
                         <option value="Nota de Venta">Nota de Venta</option>
                       </select>
                     </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Número de Documento
+                        N° Documento
                       </label>
                       <input
                         type="text"
                         value={saleFormData.documentNumber}
-                        onChange={(e) => setSaleFormData({...saleFormData, documentNumber: e.target.value})}
-                        className="border p-1.5 rounded w-full text-sm"
+                        onChange={(e) => {
+                          if (editingSale) {
+                            setSaleFormData({...saleFormData, documentNumber: e.target.value});
+                          }
+                        }}
+                        disabled={!editingSale}
+                        className={`border p-1.5 rounded w-full text-sm font-semibold ${!editingSale ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : 'bg-white'}`}
                         required
                       />
+                      {!editingSale && (
+                        <p className="text-xs text-gray-500 mt-0.5">Se genera automáticamente</p>
+                      )}
                     </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Método de Pago
@@ -2312,7 +2564,7 @@ const App = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredSales.map(sale => (
+              {filteredSales.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(sale => (
                 <tr key={sale.id} className="hover:bg-gray-50">
                   <td className="px-3 py-2">{sale.date} {sale.time}</td>
                   <td className="px-3 py-2 font-medium">{sale.customer}</td>
@@ -2333,22 +2585,28 @@ const App = () => {
                       return `${invItem?.brand} ${invItem?.model} (${item.quantity})`;
                     }).join(', ')}
                   </td>
-                  <td className="px-3 py-2">{sale.seller}</td>
+                  <td className="px-3 py-2">{sale.sellerName || sale.seller}</td>
                   <td className="px-3 py-2 font-medium text-green-600">S/. {sale.total.toLocaleString('es-PE')}</td>
                   <td className="px-3 py-2">
                     <div className="flex gap-1">
-                      <button 
-                        onClick={() => handleEditSale(sale)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit size={14} />
-                      </button>
-                      <button 
-                        onClick={() => deleteSale(sale.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                      {['Gerente', 'Administrador'].includes(currentUser.role) && (
+                        <>
+                          <button 
+                            onClick={() => handleEditSale(sale)}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="Solo Administrador y Gerente pueden editar"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button 
+                            onClick={() => deleteSale(sale.id)}
+                            className="text-red-600 hover:text-red-800"
+                            title="Solo Administrador y Gerente pueden eliminar"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                       <button 
                         onClick={() => handleViewReceipt(sale)}
                         className="text-gray-600 hover:text-gray-800"
@@ -2361,6 +2619,32 @@ const App = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
+            <div className="text-xs text-gray-600">
+              Mostrando {filteredSales.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredSales.length)} de {filteredSales.length} registros
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <div className="flex items-center gap-1 px-2 py-1 text-xs bg-white border border-gray-300 rounded">
+                Página {currentPage} de {Math.ceil(filteredSales.length / itemsPerPage) || 1}
+              </div>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredSales.length / itemsPerPage) || 1))}
+                disabled={currentPage >= Math.ceil(filteredSales.length / itemsPerPage) || filteredSales.length === 0}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -2369,6 +2653,9 @@ const App = () => {
   const CustomersModule = () => {
     const [showCustomerForm, setShowCustomerForm] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState(null);
+    const [searchCustomersTerm, setSearchCustomersTerm] = useState('');
+    const [currentPageCustomers, setCurrentPageCustomers] = useState(1);
+    const itemsPerPageCustomers = 10;
     const [customerFormData, setCustomerFormData] = useState({
       name: '',
       document: '',
@@ -2401,6 +2688,12 @@ const App = () => {
       setShowCustomerForm(true);
     };
 
+    const filteredCustomers = customers.filter(customer => 
+      customer.name.toLowerCase().includes(searchCustomersTerm.toLowerCase()) ||
+      customer.document.includes(searchCustomersTerm) ||
+      customer.phone.includes(searchCustomersTerm)
+    );
+
     return (
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
@@ -2416,6 +2709,17 @@ const App = () => {
             <Plus size={14} />
             Nuevo Cliente
           </button>
+        </div>
+
+        <div className="mb-4 relative">
+          <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+          <input
+            type="text"
+            placeholder="Buscar por nombre, documento o teléfono..."
+            className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-transparent text-sm"
+            value={searchCustomersTerm}
+            onChange={(e) => setSearchCustomersTerm(e.target.value)}
+          />
         </div>
 
         {showCustomerForm && (
@@ -2503,7 +2807,7 @@ const App = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {customers.map(customer => (
+              {filteredCustomers.slice((currentPageCustomers - 1) * itemsPerPageCustomers, currentPageCustomers * itemsPerPageCustomers).map(customer => (
                 <tr key={customer.id} className="hover:bg-gray-50">
                   <td className="px-3 py-2 font-medium">{customer.name}</td>
                   <td className="px-3 py-2">
@@ -2547,6 +2851,32 @@ const App = () => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
+            <div className="text-xs text-gray-600">
+              Mostrando {filteredCustomers.length === 0 ? 0 : (currentPageCustomers - 1) * itemsPerPageCustomers + 1} - {Math.min(currentPageCustomers * itemsPerPageCustomers, filteredCustomers.length)} de {filteredCustomers.length} registros
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPageCustomers(prev => Math.max(prev - 1, 1))}
+                disabled={currentPageCustomers === 1}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <div className="flex items-center gap-1 px-2 py-1 text-xs bg-white border border-gray-300 rounded">
+                Página {currentPageCustomers} de {Math.ceil(filteredCustomers.length / itemsPerPageCustomers) || 1}
+              </div>
+              <button
+                onClick={() => setCurrentPageCustomers(prev => Math.min(prev + 1, Math.ceil(filteredCustomers.length / itemsPerPageCustomers) || 1))}
+                disabled={currentPageCustomers >= Math.ceil(filteredCustomers.length / itemsPerPageCustomers) || filteredCustomers.length === 0}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -2554,6 +2884,8 @@ const App = () => {
 
   const WarrantiesModule = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPageWarranties, setCurrentPageWarranties] = useState(1);
+    const itemsPerPageWarranties = 10;
 
     const filteredWarranties = warranties.filter(warranty =>
       warranty.serial.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -2589,7 +2921,7 @@ const App = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredWarranties.map(warranty => {
+              {filteredWarranties.slice((currentPageWarranties - 1) * itemsPerPageWarranties, currentPageWarranties * itemsPerPageWarranties).map(warranty => {
                 const customer = customers.find(c => c.id === warranty.customerId);
                 const technicalCase = technicalCases.find(tc => tc.serial === warranty.serial);
                 return (
@@ -2650,317 +2982,343 @@ const App = () => {
               })}
             </tbody>
           </table>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
+            <div className="text-xs text-gray-600">
+              Mostrando {filteredWarranties.length === 0 ? 0 : (currentPageWarranties - 1) * itemsPerPageWarranties + 1} - {Math.min(currentPageWarranties * itemsPerPageWarranties, filteredWarranties.length)} de {filteredWarranties.length} registros
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPageWarranties(prev => Math.max(prev - 1, 1))}
+                disabled={currentPageWarranties === 1}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Anterior
+              </button>
+              <div className="flex items-center gap-1 px-2 py-1 text-xs bg-white border border-gray-300 rounded">
+                Página {currentPageWarranties} de {Math.ceil(filteredWarranties.length / itemsPerPageWarranties) || 1}
+              </div>
+              <button
+                onClick={() => setCurrentPageWarranties(prev => Math.min(prev + 1, Math.ceil(filteredWarranties.length / itemsPerPageWarranties) || 1))}
+                disabled={currentPageWarranties >= Math.ceil(filteredWarranties.length / itemsPerPageWarranties) || filteredWarranties.length === 0}
+                className="px-3 py-1 text-xs bg-white border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
   };
 
   const TechnicalModule = () => {
-    const [showCaseForm, setShowCaseForm] = useState(false);
-    const [editingCase, setEditingCase] = useState(null);
-    const [caseFormData, setCaseFormData] = useState({
+    const [searchInput, setSearchInput] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [showResults, setShowResults] = useState(false);
+    const [showQuickForm, setShowQuickForm] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [quickFormData, setQuickFormData] = useState({
       serial: '',
-      customerId: '',
       equipmentModel: '',
-      documentNumber: '',
-      documentType: 'Boleta',
       issue: '',
-      diagnosis: '',
-      actions: '',
-      status: 'Recibido',
-      warrantyStartDate: '',
-      supportType: 'Garantía'
+      status: 'Recibido'
     });
 
-    const handleAddCase = (e) => {
-      e.preventDefault();
-      if (editingCase) {
-        updateTechnicalCase({ ...editingCase, ...caseFormData });
-        setEditingCase(null);
+    // Search functionality - busca clientes y equipos
+    const handleSearch = (value) => {
+      setSearchInput(value);
+      if (value.length > 0) {
+        // Buscar clientes
+        const customerResults = customers.filter(c =>
+          c.name.toLowerCase().includes(value.toLowerCase()) ||
+          c.document.includes(value)
+        );
+        
+        // Buscar equipos comprados por el cliente (desde sales)
+        const equipmentResults = [];
+        sales.forEach(sale => {
+          if (sale.customerId && customers.find(c => c.id === sale.customerId)?.name.toLowerCase().includes(value.toLowerCase())) {
+            sale.items.forEach(item => {
+              const invItem = inventory.find(i => i.id === item.id);
+              if (invItem) {
+                equipmentResults.push({
+                  type: 'equipment',
+                  customerName: customers.find(c => c.id === sale.customerId)?.name,
+                  customerId: sale.customerId,
+                  brand: invItem.brand,
+                  model: invItem.model,
+                  serial: invItem.serial || `${invItem.brand}-${invItem.model}-${item.id}`,
+                  purchaseDate: sale.date
+                });
+              }
+            });
+          }
+        });
+        
+        setSearchResults([...customerResults.map(c => ({ ...c, type: 'customer' })), ...equipmentResults]);
+        setShowResults(true);
       } else {
-        addTechnicalCase(caseFormData);
+        setShowResults(false);
       }
-      setCaseFormData({
-        serial: '',
-        customerId: '',
-        equipmentModel: '',
-        documentNumber: '',
-        documentType: 'Boleta',
-        issue: '',
-        diagnosis: '',
-        actions: '',
-        status: 'Recibido',
-        warrantyStartDate: '',
-        supportType: 'Garantía'
-      });
-      setShowCaseForm(false);
     };
 
-    const handleEditCase = (techCase) => {
-      setEditingCase(techCase);
-      setCaseFormData({
-        serial: techCase.serial,
-        customerId: techCase.customerId,
-        equipmentModel: techCase.equipmentModel,
-        documentNumber: techCase.documentNumber,
-        documentType: techCase.documentType,
-        issue: techCase.issue,
-        diagnosis: techCase.diagnosis,
-        actions: techCase.actions,
-        status: techCase.status,
-        warrantyStartDate: techCase.warrantyStartDate,
-        supportType: techCase.supportType
+    const handleSelectCustomer = (item) => {
+      if (item.type === 'equipment') {
+        // Si es un equipo
+        setSelectedCustomer(customers.find(c => c.id === item.customerId));
+        setSearchInput(`${item.customerName} - ${item.brand} ${item.model}`);
+        setQuickFormData(prev => ({
+          ...prev,
+          serial: item.serial,
+          equipmentModel: `${item.brand} ${item.model}`
+        }));
+      } else {
+        // Si es un cliente
+        setSelectedCustomer(item);
+        setSearchInput(`${item.name} (${item.document})`);
+        setQuickFormData(prev => ({
+          ...prev,
+          serial: '',
+          equipmentModel: ''
+        }));
+      }
+      setShowResults(false);
+      setShowQuickForm(true);
+    };
+
+    const handleQuickAddCase = (e) => {
+      e.preventDefault();
+      if (!selectedCustomer) {
+        alert('Selecciona un cliente');
+        return;
+      }
+
+      const newCase = {
+        ...quickFormData,
+        customerId: selectedCustomer.id,
+        id: Math.max(...technicalCases.map(c => c.id), 0) + 1,
+        date: new Date().toISOString().split('T')[0],
+        technician: currentUser.name,
+        diagnosis: '',
+        actions: '',
+        warrantyStartDate: new Date().toISOString().split('T')[0],
+        supportType: 'Particular',
+        documentType: 'Boleta',
+        documentNumber: ''
+      };
+
+      addTechnicalCase(newCase);
+      
+      // Reset form
+      setQuickFormData({
+        serial: '',
+        equipmentModel: '',
+        issue: '',
+        status: 'Recibido'
       });
-      setShowCaseForm(true);
+      setShowQuickForm(false);
+      setSelectedCustomer(null);
+      setSearchInput('');
+    };
+
+    const handleStatusChange = (caseItem, newStatus) => {
+      updateTechnicalCase({ ...caseItem, status: newStatus });
     };
 
     return (
       <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Soporte Técnico - COMPURSATIL</h2>
-          <div className="flex gap-2">
-            <button className="bg-orange-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-orange-700">
-              <BookOpen size={14} />
-              Base de Conocimientos
-            </button>
-            <button 
-              onClick={() => {
-                setShowCaseForm(true);
-                setEditingCase(null);
-                setCaseFormData({
-                  serial: '',
-                  customerId: '',
-                  equipmentModel: '',
-                  documentNumber: '',
-                  documentType: 'Boleta',
-                  issue: '',
-                  diagnosis: '',
-                  actions: '',
-                  status: 'Recibido',
-                  warrantyStartDate: '',
-                  supportType: 'Garantía'
-                });
-              }}
-              className="bg-orange-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-orange-700"
-            >
-              <Plus size={14} />
-              Nuevo Caso
-            </button>
-          </div>
-        </div>
+        <h2 className="text-2xl font-bold mb-4">Soporte Técnico - COMPURSATIL</h2>
 
-        {showCaseForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">
-                    {editingCase ? 'Editar Caso Técnico' : 'Registrar Caso Técnico'}
-                  </h3>
-                  <button
-                    onClick={() => setShowCaseForm(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <X size={20} />
-                  </button>
+        {/* Quick Add Case Section */}
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-orange-200">
+          <h3 className="text-lg font-bold mb-3">Registrar Equipo Recibido</h3>
+          
+          {!showQuickForm ? (
+            <div className="relative">
+              <label className="block text-sm font-medium mb-2">Buscar Cliente por Nombre o Documento</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Ej: Juan Pérez o 12345678"
+                  value={searchInput}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+
+              {showResults && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 max-h-72 overflow-y-auto">
+                  {searchResults.map((item) => (
+                    <button
+                      key={`${item.type}-${item.id || item.serial}`}
+                      onClick={() => handleSelectCustomer(item)}
+                      className="w-full text-left px-4 py-2 hover:bg-orange-50 border-b last:border-b-0 transition"
+                    >
+                      {item.type === 'customer' ? (
+                        <>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-gray-600">{item.document} • {item.phone}</div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-medium text-orange-700">📱 {item.brand} {item.model}</div>
+                          <div className="text-xs text-gray-600">Cliente: {item.customerName}</div>
+                          <div className="text-xs text-gray-500">S/N: {item.serial} | Compra: {item.purchaseDate}</div>
+                        </>
+                      )}
+                    </button>
+                  ))}
                 </div>
-                
-                <form onSubmit={handleAddCase} className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              )}
+
+              {showResults && searchResults.length === 0 && searchInput && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded p-3 text-center text-gray-500 z-10">
+                  No se encontraron clientes
+                </div>
+              )}
+            </div>
+          ) : selectedCustomer && (
+            <>
+              <div className="bg-orange-50 rounded p-3 mb-3 border border-orange-200">
+                <p className="font-medium">{selectedCustomer.name}</p>
+                <p className="text-sm text-gray-600">{selectedCustomer.document} • {selectedCustomer.phone}</p>
+              </div>
+
+              <form onSubmit={handleQuickAddCase} className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Número de Serie *</label>
                     <input
-                      placeholder="Número de serie del equipo"
-                      className="border p-1.5 rounded text-sm"
-                      value={caseFormData.serial}
-                      onChange={(e) => setCaseFormData({...caseFormData, serial: e.target.value})}
+                      type="text"
+                      value={quickFormData.serial}
+                      onChange={(e) => setQuickFormData({ ...quickFormData, serial: e.target.value })}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ej: HP789012"
                       required
                     />
-                    <select
-                      className="border p-1.5 rounded text-sm"
-                      value={caseFormData.customerId}
-                      onChange={(e) => setCaseFormData({...caseFormData, customerId: e.target.value})}
-                      required
-                    >
-                      <option value="">Seleccionar cliente</option>
-                      {customers.map(customer => (
-                        <option key={customer.id} value={customer.id}>{customer.name}</option>
-                      ))}
-                    </select>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Modelo del Equipo *</label>
                     <input
-                      placeholder="Modelo del equipo"
-                      className="border p-1.5 rounded text-sm"
-                      value={caseFormData.equipmentModel}
-                      onChange={(e) => setCaseFormData({...caseFormData, equipmentModel: e.target.value})}
+                      type="text"
+                      value={quickFormData.equipmentModel}
+                      onChange={(e) => setQuickFormData({ ...quickFormData, equipmentModel: e.target.value })}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500"
+                      placeholder="Ej: HP Spectre x360 14"
                       required
                     />
-                    <div className="grid grid-cols-2 gap-1">
-                      <select
-                        className="border p-1.5 rounded text-sm"
-                        value={caseFormData.documentType}
-                        onChange={(e) => setCaseFormData({...caseFormData, documentType: e.target.value})}
-                      >
-                        <option value="Boleta">Boleta</option>
-                        <option value="Factura">Factura</option>
-                        <option value="Proforma">Proforma</option>
-                        <option value="Nota de Venta">Nota de Venta</option>
-                      </select>
-                      <input
-                        placeholder="N° Documento"
-                        className="border p-1.5 rounded text-sm"
-                        value={caseFormData.documentNumber}
-                        onChange={(e) => setCaseFormData({...caseFormData, documentNumber: e.target.value})}
-                        required
-                      />
-                    </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    <select
-                      className="border p-1.5 rounded text-sm"
-                      value={caseFormData.supportType}
-                      onChange={(e) => setCaseFormData({...caseFormData, supportType: e.target.value})}
-                    >
-                      <option value="Garantía">Garantía</option>
-                      <option value="Particular">Particular</option>
-                    </select>
-                    {caseFormData.supportType === 'Garantía' && (
-                      <input
-                        type="date"
-                        placeholder="Fecha inicio garantía"
-                        className="border p-1.5 rounded text-sm"
-                        value={caseFormData.warrantyStartDate}
-                        onChange={(e) => setCaseFormData({...caseFormData, warrantyStartDate: e.target.value})}
-                        required
-                      />
-                    )}
-                  </div>
-                  
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Falla Reportada *</label>
                   <textarea
-                    placeholder="Falla reportada por el cliente"
-                    className="border p-1.5 rounded text-sm"
+                    value={quickFormData.issue}
+                    onChange={(e) => setQuickFormData({ ...quickFormData, issue: e.target.value })}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-orange-500"
+                    placeholder="Describe la falla o problema del equipo"
                     rows="2"
-                    value={caseFormData.issue}
-                    onChange={(e) => setCaseFormData({...caseFormData, issue: e.target.value})}
                     required
                   />
-                  <textarea
-                    placeholder="Diagnóstico técnico realizado"
-                    className="border p-1.5 rounded text-sm"
-                    rows="2"
-                    value={caseFormData.diagnosis}
-                    onChange={(e) => setCaseFormData({...caseFormData, diagnosis: e.target.value})}
-                  />
-                  <textarea
-                    placeholder="Acciones/Reparaciones efectuadas"
-                    className="border p-1.5 rounded text-sm"
-                    rows="2"
-                    value={caseFormData.actions}
-                    onChange={(e) => setCaseFormData({...caseFormData, actions: e.target.value})}
-                  />
-                  <select
-                    className="border p-1.5 rounded text-sm"
-                    value={caseFormData.status}
-                    onChange={(e) => setCaseFormData({...caseFormData, status: e.target.value})}
-                  >
-                    <option value="Recibido">Recibido</option>
-                    <option value="En diagnóstico">En diagnóstico</option>
-                    <option value="En reparación">En reparación</option>
-                    <option value="Reparado">Reparado</option>
-                    <option value="Entregado">Entregado</option>
-                  </select>
-                  
-                  <div className="flex gap-2">
-                    <button type="submit" className="bg-orange-600 text-white px-3 py-1.5 rounded text-sm hover:bg-orange-700">
-                      {editingCase ? 'Actualizar Caso' : 'Registrar Caso'}
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={() => setShowCaseForm(false)}
-                      className="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-400"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
+                </div>
 
-        <div className="bg-white rounded shadow overflow-hidden">
-          <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 font-medium"
+                  >
+                    Registrar Equipo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowQuickForm(false);
+                      setSelectedCustomer(null);
+                      setSearchInput('');
+                      setQuickFormData({ serial: '', equipmentModel: '', issue: '', status: 'Recibido' });
+                    }}
+                    className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 font-medium"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
+
+        {/* Cases Table */}
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Falla</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagnóstico</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Técnico</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th className="px-4 py-3 text-left font-semibold">Equipo (S/N)</th>
+                <th className="px-4 py-3 text-left font-semibold">Cliente</th>
+                <th className="px-4 py-3 text-left font-semibold">Falla</th>
+                <th className="px-4 py-3 text-left font-semibold">Estado</th>
+                <th className="px-4 py-3 text-left font-semibold">Técnico</th>
+                <th className="px-4 py-3 text-left font-semibold">Registrado</th>
+                <th className="px-4 py-3 text-center font-semibold">Acciones</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {technicalCases.map(caseItem => {
-                const customer = customers.find(c => c.id === caseItem.customerId);
-                return (
-                  <tr key={caseItem.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2">
-                      <p className="font-medium">S/N: {caseItem.serial}</p>
-                      <p className="text-gray-500">{caseItem.equipmentModel}</p>
-                    </td>
-                    <td className="px-3 py-2">{customer?.name || 'Cliente no encontrado'}</td>
-                    <td className="px-3 py-2">
-                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                        caseItem.documentType === 'Boleta' ? 'bg-blue-100 text-blue-800' :
-                        caseItem.documentType === 'Factura' ? 'bg-green-100 text-green-800' :
-                        'bg-purple-100 text-purple-800'
-                      }`}>
-                        {caseItem.documentType}
-                      </span>
-                      <div className="text-xs text-gray-500">{caseItem.documentNumber}</div>
-                    </td>
-                    <td className="px-3 py-2 text-gray-600">{caseItem.issue}</td>
-                    <td className="px-3 py-2 text-gray-600">{caseItem.diagnosis || 'Pendiente'}</td>
-                    <td className="px-3 py-2">
-                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                        caseItem.status === 'Recibido' ? 'bg-blue-100 text-blue-800' :
-                        caseItem.status === 'En diagnóstico' ? 'bg-yellow-100 text-yellow-800' :
-                        caseItem.status === 'En reparación' ? 'bg-orange-100 text-orange-800' :
-                        caseItem.status === 'Reparado' ? 'bg-purple-100 text-purple-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
-                        {caseItem.status}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div>{caseItem.technician}</div>
-                      <div className="text-xs text-gray-500">
-                        {caseItem.supportType === 'Particular' ? 'Particular' : `Garantía desde ${caseItem.warrantyStartDate}`}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex gap-1">
-                        <button 
-                          onClick={() => handleEditCase(caseItem)}
-                          className="text-blue-600 hover:text-blue-800"
+            <tbody>
+              {technicalCases.length > 0 ? (
+                technicalCases.map((caseItem) => {
+                  const customer = customers.find(c => c.id === caseItem.customerId);
+                  return (
+                    <tr key={caseItem.id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <div className="font-medium">{caseItem.equipmentModel}</div>
+                        <div className="text-xs text-gray-600">S/N: {caseItem.serial}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium">{customer?.name || 'No encontrado'}</div>
+                        <div className="text-xs text-gray-600">{customer?.document}</div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{caseItem.issue}</td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={caseItem.status}
+                          onChange={(e) => handleStatusChange(caseItem, e.target.value)}
+                          className={`text-xs font-medium px-3 py-1 rounded border-0 cursor-pointer ${
+                            caseItem.status === 'Recibido' ? 'bg-blue-100 text-blue-800' :
+                            caseItem.status === 'En diagnóstico' ? 'bg-yellow-100 text-yellow-800' :
+                            caseItem.status === 'En reparación' ? 'bg-orange-100 text-orange-800' :
+                            caseItem.status === 'Reparado' ? 'bg-purple-100 text-purple-800' :
+                            'bg-green-100 text-green-800'
+                          }`}
                         >
-                          <Edit size={14} />
-                        </button>
-                        <button 
+                          <option value="Recibido">Recibido</option>
+                          <option value="En diagnóstico">En diagnóstico</option>
+                          <option value="En reparación">En reparación</option>
+                          <option value="Reparado">Reparado</option>
+                          <option value="Entregado">Entregado</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-sm">{caseItem.technician || currentUser.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{caseItem.date}</td>
+                      <td className="px-4 py-3 text-center">
+                        <button
                           onClick={() => deleteTechnicalCase(caseItem.id)}
                           className="text-red-600 hover:text-red-800"
+                          title="Eliminar"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="7" className="px-4 py-4 text-center text-gray-500">
+                    No hay casos técnicos registrados
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -3096,6 +3454,212 @@ const App = () => {
     );
   };
 
+  const ShipmentTrackingModule = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredShipments, setFilteredShipments] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [visibleClaves, setVisibleClaves] = useState(new Set());
+    const [loading, setLoading] = useState(true);
+    const itemsPerPage = 10;
+
+    // Initialize filtered shipments
+    useEffect(() => {
+      console.log('ShipmentTrackingModule mounted. Shipments count:', shipments ? shipments.length : 0);
+      setLoading(!shipments || shipments.length === 0);
+    }, []);
+
+    // Filter shipments
+    useEffect(() => {
+      console.log('Shipments updated:', shipments);
+      if (!shipments || shipments.length === 0) {
+        setFilteredShipments([]);
+        setLoading(false);
+        return;
+      }
+      
+      setLoading(false);
+      const filtered = shipments.filter(ship =>
+        (ship.nombre && ship.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (ship.documento && ship.documento.includes(searchTerm)) ||
+        (ship.telefono && ship.telefono.includes(searchTerm))
+      );
+      setFilteredShipments(filtered);
+      setCurrentPage(1);
+    }, [searchTerm, shipments]);
+
+    const paginatedShipments = filteredShipments.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+
+    return (
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Truck size={28} /> Seguimiento de Envíos
+          </h2>
+          <div className="flex gap-2 items-center">
+            <span className="text-sm text-gray-600">Total: {shipments && shipments.length ? shipments.length : 0} envíos</span>
+            <button
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => {
+                  setLoading(false);
+                }, 500);
+              }}
+              className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
+              title="Recargar datos"
+            >
+              ↻
+            </button>
+          </div>
+        </div>
+
+        {/* Debug info - mostrar si hay datos */}
+        {loading && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <p className="text-yellow-800 text-sm">
+              ⏳ Cargando datos de envíos desde servidor...
+            </p>
+          </div>
+        )}
+        
+        {!loading && (!shipments || shipments.length === 0) && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-blue-800 text-sm">
+              ℹ️ No hay envíos registrados en el sistema
+            </p>
+          </div>
+        )}
+
+        {/* Search bar */}
+        <div className="mb-4 flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar por nombre, documento o teléfono..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Shipments Table */}
+        <div className="bg-white rounded-lg shadow overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Nombre</th>
+                <th className="px-4 py-3 text-left font-semibold">Documento</th>
+                <th className="px-4 py-3 text-left font-semibold">Teléfono</th>
+                <th className="px-4 py-3 text-left font-semibold">Ubicación</th>
+                <th className="px-4 py-3 text-left font-semibold">Modalidad</th>
+                <th className="px-4 py-3 text-left font-semibold">Costo</th>
+                <th className="px-4 py-3 text-left font-semibold">Clave</th>
+                <th className="px-4 py-3 text-left font-semibold">Razón</th>
+                <th className="px-4 py-3 text-left font-semibold">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedShipments.length > 0 ? (
+                paginatedShipments.map((shipment) => (
+                  <tr key={shipment.id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium">{shipment.nombre || '-'}</td>
+                    <td className="px-4 py-3">{shipment.documento || '-'}</td>
+                    <td className="px-4 py-3">{shipment.telefono || '-'}</td>
+                    <td className="px-4 py-3 text-xs">
+                      <div>{shipment.departamento || '-'}</div>
+                      <div className="text-gray-600">{shipment.distrito || '-'}</div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 rounded text-xs font-medium ${
+                        (shipment.modalidad || '').toLowerCase() === 'express' ? 'bg-blue-100 text-blue-800' :
+                        (shipment.modalidad || '').toLowerCase() === 'standard' ? 'bg-purple-100 text-purple-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {shipment.modalidad || '-'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-semibold">S/. {shipment.costo ? parseFloat(shipment.costo).toFixed(2) : '0.00'}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newVisibleClaves = new Set(visibleClaves);
+                          if (newVisibleClaves.has(shipment.id)) {
+                            newVisibleClaves.delete(shipment.id);
+                          } else {
+                            newVisibleClaves.add(shipment.id);
+                          }
+                          setVisibleClaves(newVisibleClaves);
+                        }}
+                        className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded text-xs font-mono font-semibold text-gray-800"
+                      >
+                        {visibleClaves.has(shipment.id) ? (shipment.clave || '****') : '****'}
+                        {visibleClaves.has(shipment.id) ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 rounded text-xs font-medium ${
+                        (shipment.razon || '').toLowerCase() === 'envio' ? 'bg-green-100 text-green-800' :
+                        (shipment.razon || '').toLowerCase() === 'devolucion' ? 'bg-red-100 text-red-800' :
+                        'bg-orange-100 text-orange-800'
+                      }`}>
+                        {shipment.razon || '-'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 rounded text-xs font-medium ${
+                        (shipment.estado || '').toLowerCase() === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                        (shipment.estado || '').toLowerCase() === 'enviado' ? 'bg-blue-100 text-blue-800' :
+                        (shipment.estado || '').toLowerCase() === 'en tránsito' ? 'bg-purple-100 text-purple-800' :
+                        (shipment.estado || '').toLowerCase() === 'entregado' ? 'bg-green-100 text-green-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {shipment.estado || 'Pendiente'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="9" className="px-4 py-4 text-center text-gray-500">
+                    {loading ? 'Cargando envíos...' : 'No hay envíos registrados'}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {filteredShipments.length > itemsPerPage && (
+          <div className="flex justify-center items-center gap-2 mt-4">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span className="text-sm">
+              Página {currentPage} de {Math.ceil(filteredShipments.length / itemsPerPage)}
+            </span>
+            <button
+              onClick={() => setCurrentPage(Math.min(Math.ceil(filteredShipments.length / itemsPerPage), currentPage + 1))}
+              disabled={currentPage >= Math.ceil(filteredShipments.length / itemsPerPage)}
+              className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const ReportsModule = () => {
     const [startDate, setStartDate] = useState('2025-10-01');
     const [endDate, setEndDate] = useState('2025-10-06');
@@ -3145,31 +3709,100 @@ const App = () => {
     });
 
     const exportReport = () => {
-      const content = `
-        COMPURSATIL IMPORTACIONES
-        Reporte de Ventas
-        Del ${startDate} al ${endDate}
-        
-        Total Ventas: ${totalSalesCount}
-        Valor Total: S/. ${totalSalesValue.toLocaleString('es-PE')}
-        
-        Productos Más Vendidos:
-        ${topProducts.map(p => `${p.quantity} unidades de ${inventory.find(i => i.id === p.id)?.brand} ${inventory.find(i => i.id === p.id)?.model}`).join('\n        ')}
-        
-        Ventas por Día:
-        ${Object.entries(salesByDay).map(([date, data]) => `${date}: ${data.count} ventas, S/. ${data.total.toLocaleString('es-PE')}`).join('\n        ')}
-        
-        Ventas por Método de Pago:
-        ${Object.entries(salesByPayment).map(([method, data]) => `${method}: ${data.count} ventas, S/. ${data.total.toLocaleString('es-PE')}`).join('\n        ')}
-      `;
+      // Crear workbook
+      const wb = XLSX.utils.book_new();
       
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `reporte_ventas_${startDate}_a_${endDate}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
+      // Hoja 1: Resumen General
+      const summarySheet = [
+        ['COMPURSATIL IMPORTACIONES'],
+        ['Reporte de Ventas'],
+        [`Del ${startDate} al ${endDate}`],
+        [],
+        ['RESUMEN GENERAL'],
+        ['Métrica', 'Valor'],
+        ['Total Ventas', totalSalesCount],
+        ['Valor Total (S/.)', totalSalesValue.toFixed(2)],
+        ['Promedio por Venta (S/.)', (totalSalesValue / totalSalesCount).toFixed(2)],
+        []
+      ];
+      
+      // Hoja 2: Detalle de Ventas
+      const salesSheet = [
+        ['DETALLE DE VENTAS'],
+        [],
+        ['Fecha', 'Hora', 'Cliente', 'Documento', 'Tipo', 'Productos', 'Vendedor', 'Método Pago', 'Total (S/.)', 'Observaciones']
+      ];
+      
+      filteredSales.forEach(sale => {
+        const products = sale.items.map(item => {
+          const invItem = inventory.find(i => i.id === item.id);
+          return `${invItem?.brand} ${invItem?.model} (${item.quantity})`;
+        }).join('; ');
+        
+        salesSheet.push([
+          sale.date,
+          sale.time,
+          sale.customer,
+          sale.documentNumber,
+          sale.documentType,
+          products,
+          sale.seller,
+          sale.payment,
+          sale.total.toFixed(2),
+          sale.observations || ''
+        ]);
+      });
+      
+      // Hoja 3: Top Productos
+      const topProductsSheet = [
+        ['PRODUCTOS MÁS VENDIDOS'],
+        [],
+        ['Ranking', 'Marca', 'Modelo', 'Cantidad Vendida', 'Precio Unitario (S/.)', 'Total Vendido (S/.)']
+      ];
+      
+      topProducts.forEach((product, index) => {
+        const invItem = inventory.find(i => i.id === product.id);
+        topProductsSheet.push([
+          index + 1,
+          invItem?.brand || '',
+          invItem?.model || '',
+          product.quantity,
+          invItem?.price.toFixed(2) || '',
+          (product.quantity * (invItem?.price || 0)).toFixed(2)
+        ]);
+      });
+      
+      // Hoja 4: Ventas por Día
+      const byDaySheet = [
+        ['VENTAS POR DÍA'],
+        [],
+        ['Fecha', 'Cantidad de Ventas', 'Monto Total (S/)']
+      ];
+      
+      Object.entries(salesByDay).forEach(([date, data]) => {
+        byDaySheet.push([date, data.count, data.total.toFixed(2)]);
+      });
+      
+      // Hoja 5: Ventas por Método de Pago
+      const byPaymentSheet = [
+        ['VENTAS POR MÉTODO DE PAGO'],
+        [],
+        ['Método de Pago', 'Cantidad de Transacciones', 'Monto Total (S/)']
+      ];
+      
+      Object.entries(salesByPayment).forEach(([method, data]) => {
+        byPaymentSheet.push([method, data.count, data.total.toFixed(2)]);
+      });
+      
+      // Agregar hojas al workbook
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summarySheet), 'Resumen');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(salesSheet), 'Detalle Ventas');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(topProductsSheet), 'Top Productos');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(byDaySheet), 'Por Día');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(byPaymentSheet), 'Por Pago');
+      
+      // Descargar archivo
+      XLSX.writeFile(wb, `reporte_ventas_${startDate}_a_${endDate}.xlsx`);
     };
 
     return (
@@ -3656,6 +4289,21 @@ const App = () => {
   const ReceiptConfigModule = () => {
     const [config, setConfig] = useState(receiptConfig);
 
+    const handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setConfig({...config, logo: reader.result});
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    const handleRemoveLogo = () => {
+      setConfig({...config, logo: null});
+    };
+
     const handleSaveConfig = (e) => {
       e.preventDefault();
       setReceiptConfig(config);
@@ -3668,6 +4316,40 @@ const App = () => {
         
         <div className="bg-white p-4 rounded shadow">
           <form onSubmit={handleSaveConfig} className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Logo de la Empresa
+              </label>
+              <div className="flex items-center gap-4">
+                {config.logo && (
+                  <div className="flex flex-col items-center">
+                    <img 
+                      src={config.logo} 
+                      alt="Logo" 
+                      className="max-h-32 max-w-xs object-contain border border-gray-300 rounded p-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      className="mt-2 text-red-600 hover:text-red-800 text-sm"
+                    >
+                      Eliminar Logo
+                    </button>
+                  </div>
+                )}
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="block border border-gray-300 rounded p-2 text-sm"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">Sube una imagen PNG, JPG o SVG (máximo 500KB)</p>
+                  <p className="text-xs text-gray-600">Se recomienda una imagen cuadrada o rectangular de alta calidad</p>
+                </div>
+              </div>
+            </div>
+            
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
                 Nombre de la Empresa
@@ -3744,8 +4426,8 @@ const App = () => {
       case 'inventory': return <InventoryModule />;
       case 'sales': return <SalesModule />;
       case 'customers': return <CustomersModule />;
-      case 'warranties': return <WarrantiesModule />;
       case 'technical': return <TechnicalModule />;
+      case 'shipmentTracking': return <ShipmentTrackingModule />;
       case 'reports': return <ReportsModule />;
       case 'users': return <UsersModule />;
       case 'categories': return <CategoriesModule />;
@@ -3760,12 +4442,51 @@ const App = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-30'}`}>
-        {renderModule()}
-      </main>
-    </div>
+    <>
+      <style>{`
+        @media print {
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          .no-print {
+            display: none !important;
+          }
+          @page {
+            size: A4;
+            margin: 0;
+            padding: 0;
+          }
+          div[style*="210mm"] {
+            width: 210mm !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            page-break-after: always;
+          }
+          table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+          td, th {
+            border: 1px solid #000 !important;
+            padding: 4px !important;
+          }
+        }
+      `}</style>
+      <div className="flex min-h-screen bg-gray-100">
+        <Sidebar />
+        <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+          {renderModule()}
+        </main>
+      </div>
+    </>
   );
 };
 

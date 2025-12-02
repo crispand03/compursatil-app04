@@ -9,11 +9,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy":"gh-pages -d dist",
+    "deploy": "gh-pages -d dist",
     "start": "vite"
   },
   "dependencies": {
     "gh-pages": "^6.3.0",
+    "lucide-react": "^0.553.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-feather": "^2.0.10",
