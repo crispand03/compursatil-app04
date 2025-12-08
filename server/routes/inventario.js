@@ -66,23 +66,23 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const {
-      marca, modelo, numero_serie, categoria_id, proveedor_id,
+      marca, modelo, numero_serie,
       especificaciones_ram, especificaciones_almacenamiento, especificaciones_procesador,
       especificaciones_gpu, especificaciones_pantalla, especificaciones_so,
-      estado, stock, costo_unitario, precio_venta, fecha_ingreso
+      estado, stock, costo_unitario, precio_venta, proveedor_nombre, imagen
     } = req.body;
 
     const result = await query(
       `INSERT INTO inventario 
-      (marca, modelo, numero_serie, categoria_id, proveedor_id, 
+      (marca, modelo, numero_serie,
        especificaciones_ram, especificaciones_almacenamiento, especificaciones_procesador,
        especificaciones_gpu, especificaciones_pantalla, especificaciones_so,
-       estado, stock, costo_unitario, precio_venta, fecha_ingreso)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [marca, modelo, numero_serie, categoria_id, proveedor_id,
+       estado, stock, costo_unitario, precio_venta, proveedor_nombre, imagen)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [marca, modelo, numero_serie,
        especificaciones_ram, especificaciones_almacenamiento, especificaciones_procesador,
        especificaciones_gpu, especificaciones_pantalla, especificaciones_so,
-       estado, stock, costo_unitario, precio_venta, fecha_ingreso]
+       estado, stock, costo_unitario, precio_venta, proveedor_nombre, imagen]
     );
 
     res.status(201).json({
@@ -102,23 +102,23 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const {
-      marca, modelo, categoria_id, proveedor_id,
+      marca, modelo,
       especificaciones_ram, especificaciones_almacenamiento, especificaciones_procesador,
       especificaciones_gpu, especificaciones_pantalla, especificaciones_so,
-      estado, stock, costo_unitario, precio_venta
+      estado, stock, costo_unitario, precio_venta, proveedor_nombre, imagen
     } = req.body;
 
     await query(
       `UPDATE inventario SET
-      marca = ?, modelo = ?, categoria_id = ?, proveedor_id = ?,
+      marca = ?, modelo = ?,
       especificaciones_ram = ?, especificaciones_almacenamiento = ?, especificaciones_procesador = ?,
       especificaciones_gpu = ?, especificaciones_pantalla = ?, especificaciones_so = ?,
-      estado = ?, stock = ?, costo_unitario = ?, precio_venta = ?
+      estado = ?, stock = ?, costo_unitario = ?, precio_venta = ?, proveedor_nombre = ?, imagen = ?
       WHERE id = ?`,
-      [marca, modelo, categoria_id, proveedor_id,
+      [marca, modelo,
        especificaciones_ram, especificaciones_almacenamiento, especificaciones_procesador,
        especificaciones_gpu, especificaciones_pantalla, especificaciones_so,
-       estado, stock, costo_unitario, precio_venta, req.params.id]
+       estado, stock, costo_unitario, precio_venta, proveedor_nombre, imagen, req.params.id]
     );
 
     res.json({ success: true, message: 'Equipo actualizado' });

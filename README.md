@@ -1,351 +1,345 @@
 # 🏢 COMPURSATIL - Sistema de Gestión de Inventarios y Ventas
 
-<div align="center">
+> **Una solución completa y profesional para gestionar tu negocio de forma eficiente**
 
-![Logo](./public/compursatil_logo.svg)
-
-**Solución integral para la gestión empresarial de tiendas de computación**
-
-[![GitHub](https://img.shields.io/badge/GitHub-crispand03-blue?style=flat-square&logo=github)](https://github.com/crispand03/compursatil-app02)
-[![Node.js](https://img.shields.io/badge/Node.js-20.x-green?style=flat-square&logo=node.js)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19.1-blue?style=flat-square&logo=react)](https://react.dev/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=flat-square&logo=mysql)](https://www.mysql.com/)
-[![License](https://img.shields.io/badge/License-MIT-purple?style=flat-square)](LICENSE)
-
-</div>
+![React](https://img.shields.io/badge/React-19.1.1-blue?style=flat-square&logo=react)
+![Vite](https://img.shields.io/badge/Vite-7.1-purple?style=flat-square&logo=vite)
+![Node.js](https://img.shields.io/badge/Node.js-Express-green?style=flat-square&logo=node.js)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?style=flat-square&logo=mysql)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 ---
 
-## 📋 ¿Qué es COMPURSATIL?
+## 📋 Descripción del Software
 
-**COMPURSATIL** es una aplicación web empresarial completa diseñada para gestionar todos los aspectos operativos de una tienda de computación. Proporciona herramientas integradas para:
+**COMPURSATIL** es un sistema web integral diseñado para pequeñas y medianas empresas de comercio electrónico y venta de productos. Proporciona herramientas profesionales para gestionar inventarios, ventas, clientes, envíos, garantías y soporte técnico desde una plataforma centralizada.
 
-- ✅ **Gestión de Inventario** - Control de stock y productos
-- ✅ **Ventas y Facturación** - Registro de transacciones y reportes
-- ✅ **Seguimiento de Envíos** - Rastreo de entregas y logística
-- ✅ **Servicio Técnico** - Gestión de garantías y soporte
-- ✅ **Reportes y Análisis** - Estadísticas y dashboards
-- ✅ **Gestión de Usuarios** - Control de acceso por roles
+### 🎯 Objetivo Principal
+Optimizar y automatizar todos los procesos comerciales, reduciendo errores, mejorando la eficiencia operativa y ofreciendo una experiencia superior al cliente.
 
 ---
 
-## 🎯 Características Principales
+## ✨ Características Principales
 
-### 📦 Módulo de Inventario
-- Registro de productos con categorías
-- Control de stock en tiempo real
-- Alertas de bajo inventario
-- Gestión de proveedores
+### 📦 **Gestión de Inventario**
+- Control completo de productos y stock
+- Categorización de artículos
+- Seguimiento de niveles de existencia
+- Alertas de productos agotados
 - Historial de movimientos
 
-### 💳 Módulo de Ventas
-- Creación rápida de facturas
-- Cálculo automático de totales e impuestos
-- Registro de clientes
-- Historial de compras
-- Impresión de recibos
+### 💳 **Sistema de Ventas**
+- Generación de facturas automáticas
+- Cotizaciones personalizadas
+- Registro de transacciones completo
+- Cálculo automático de impuestos
+- Descuentos y promociones configurables
 
-### 🚚 Módulo de Envíos
-- Seguimiento de entregas
-- Claves de rastreo
-- Modalidades de envío
-- Costos de logística
-- Estado de paquetes
+### 👥 **Gestión de Clientes**
+- Base de datos centralizada de clientes
+- Historial de compras por cliente
+- Información de contacto y dirección
+- Clasificación de clientes
+- Seguimiento de preferencias
 
-### 🛠️ Módulo de Soporte Técnico
-- Gestión de garantías
-- Tickets de soporte
-- Historial de reparaciones
-- Seguimiento de casos abiertos
+### 🚚 **Seguimiento de Envíos**
+- Rastreo en tiempo real de entregas
+- Múltiples modalidades de envío
+- Códigos de seguimiento únicos
+- Historial de logística
+- Notificaciones de estado
+
+### 🛠️ **Soporte Técnico**
+- Gestión de casos de soporte
+- Seguimiento de garantías
 - Resolución de problemas
+- Historial de interacciones
+- Priorización de tickets
 
-### 📊 Módulo de Reportes
-- Estadísticas de ventas
-- Análisis de inventario
-- Reportes de envíos
-- Gráficos personalizables
-- Exportación a Excel
+### 📊 **Reportes y Análisis**
+- Dashboard con métricas clave
+- Gráficos estadísticos
+- Reportes por período
+- Análisis de ventas y tendencias
+- Exportación a Excel (XLSX)
 
-### 🔐 Control de Acceso
-- 4 roles de usuario: **Admin**, **Gerente**, **Vendedor**, **Soporte**
-- Permisos personalizados por módulo
-- Autenticación JWT segura
-- Contraseñas encriptadas con bcrypt
+### 🔐 **Control de Acceso**
+- Sistema de autenticación JWT
+- 4 roles de usuario configurable (Admin, Gerente, Vendedor, Soporte)
+- Permisos granulares por módulo
+- Contraseñas encriptadas
+- Auditoría de accesos
 
 ---
 
-## 🏗️ Arquitectura Técnica
+## 🛠️ Stack Tecnológico
 
 ### Frontend
-- **React 19.1** - UI interactiva con componentes reutilizables
-- **Vite 7** - Build tool moderno y rápido
-- **Tailwind CSS** - Estilos responsivos y modernos
+- **React 19.1.1** - Interfaz de usuario dinámica
+- **Vite 7.1** - Compilador y bundler ultrarrápido
+- **Tailwind CSS** - Diseño responsivo y moderno
 - **Lucide React** - Iconografía profesional
-- **XLSX** - Exportación de reportes a Excel
+- **XLSX** - Exportación de datos
 
 ### Backend
-- **Node.js + Express** - API RESTful escalable
-- **MySQL 8** - Base de datos relacional
+- **Node.js** - Entorno de ejecución
+- **Express.js** - Framework web robusto
+- **MySQL2** - Base de datos relacional
 - **JWT** - Autenticación segura
 - **bcryptjs** - Encriptación de contraseñas
-- **CORS** - Configuración de seguridad
 
 ### Base de Datos
-- **18 tablas** con relaciones optimizadas
-- **Foreign keys** para integridad referencial
-- **Índices** para mejor rendimiento
-- **Seed data** con datos de prueba
+- **MySQL 8.0+** - 18 tablas con relaciones
+- **Integridad referencial** - Validación automática
+- **Índices optimizados** - Rendimiento rápido
 
 ---
 
-## 🚀 Instalación Rápida
+## 🚀 Guía de Instalación
 
 ### Requisitos Previos
-- Node.js 18.x o superior
-- MySQL 8.0 o superior
-- Git
+- **Node.js** v18 o superior
+- **npm** o **yarn**
+- **MySQL** v8.0 o superior
 
 ### Pasos de Instalación
 
-1. **Clonar el repositorio**
+#### 1. Clonar el Repositorio
 ```bash
 git clone https://github.com/crispand03/compursatil-app02.git
 cd compursatil-app02
 ```
 
-2. **Instalar dependencias**
+#### 2. Instalar Dependencias del Frontend
 ```bash
 npm install
+```
+
+#### 3. Instalar Dependencias del Backend
+```bash
 cd server
 npm install
 cd ..
 ```
 
-3. **Configurar base de datos**
+#### 4. Configurar Base de Datos
 ```bash
-cd server
-node init-db.js
-node insert-test-data.js
-cd ..
+# Desde la carpeta raíz
+node server/init-db.js
 ```
 
-4. **Ejecutar la aplicación**
+#### 5. Insertar Datos de Prueba (Opcional)
 ```bash
-# Terminal 1: Backend (puerto 3001)
+node server/insert-test-data.js
+node server/insert-related.js
+```
+
+#### 6. Iniciar el Sistema
+
+**Terminal 1 - Backend (Puerto 3001)**
+```bash
 cd server
 npm start
+```
 
-# Terminal 2: Frontend (puerto 5173)
+**Terminal 2 - Frontend (Puerto 5173)**
+```bash
 npm run dev
 ```
 
-5. **Acceder a la aplicación**
+#### 7. Acceder a la Aplicación
 ```
 http://localhost:5173/compursatil-app
 ```
 
 ---
 
-## 🔐 Credenciales de Prueba
+## 👤 Credenciales de Prueba
 
-| Rol | Usuario | Contraseña | Módulos Accesibles |
-|-----|---------|------------|-------------------|
-| **Admin** | `admin` | `admin123` | Todos |
-| **Gerente** | `gerente` | `gerente123` | Dashboard, Inventario, Ventas, Reportes |
-| **Vendedor** | `vendedor` | `venta123` | Inventario, Ventas, Clientes |
-| **Soporte** | `soporte` | `sop123` | Soporte Técnico, Garantías |
+| Rol | Usuario | Contraseña | Acceso |
+|-----|---------|------------|--------|
+| **Administrador** | `admin` | `admin123` | Acceso total al sistema |
+| **Gerente** | `gerente` | `gerente123` | Gestión y reportes |
+| **Vendedor** | `vendedor` | `venta123` | Ventas e inventario |
+| **Soporte** | `soporte` | `sop123` | Casos y garantías |
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📊 Estructura del Proyecto
 
 ```
 compursatil-app02/
-├── src/                          # Código frontend React
-│   ├── App.jsx                   # Componente principal (4500+ líneas)
-│   ├── main.jsx                  # Entry point
-│   ├── App.css                   # Estilos globales
-│   └── assets/                   # Imágenes y logos
-├── server/                       # Código backend Node.js
-│   ├── server.js                 # Servidor Express
-│   ├── init-db.js                # Inicialización BD
-│   ├── insert-test-data.js       # Datos de prueba
-│   ├── routes/                   # Endpoints API
-│   │   ├── auth.js               # Autenticación
-│   │   ├── inventario.js         # CRUD productos
-│   │   ├── ventas.js             # CRUD ventas
-│   │   ├── envios.js             # CRUD envíos
-│   │   ├── soporte.js            # CRUD soporte
-│   │   └── ...                   # Más rutas
-│   └── config/                   # Configuración
-├── database/                     # Scripts SQL
-│   ├── compursatil.sql          # Schema BD
-│   └── seed-data.sql            # Datos iniciales
-├── package.json                  # Dependencias
-├── vite.config.js               # Configuración Vite
-└── tailwind.config.js           # Configuración Tailwind
+├── src/
+│   ├── App.jsx                 # Componente principal
+│   ├── App.css                 # Estilos globales
+│   ├── main.jsx                # Punto de entrada
+│   ├── index.css               # Estilos de índice
+│   └── assets/                 # Recursos estáticos
+├── server/
+│   ├── server.js               # Servidor Express
+│   ├── init-db.js              # Inicializar base de datos
+│   ├── insert-test-data.js     # Insertar datos de prueba
+│   ├── config/
+│   │   └── database.js         # Configuración MySQL
+│   └── routes/
+│       ├── auth.js             # Autenticación
+│       ├── inventario.js       # Gestión de productos
+│       ├── clientes.js         # Gestión de clientes
+│       ├── ventas.js           # Gestión de ventas
+│       ├── envios.js           # Seguimiento de envíos
+│       ├── garantias.js        # Garantías
+│       ├── soporte.js          # Casos técnicos
+│       └── ...más rutas
+├── database/
+│   ├── compursatil.sql        # Schema completo
+│   ├── insert-details.sql     # Datos adicionales
+│   └── seed-data.sql          # Datos de prueba
+├── vite.config.js             # Configuración Vite
+├── tailwind.config.js         # Configuración Tailwind
+└── package.json               # Dependencias
 ```
 
 ---
 
-## 📊 Datos Incluidos
+## 📡 API Endpoints
 
-El sistema viene preconfigurado con datos de prueba:
-- **5 Productos** en inventario
-- **3 Clientes** registrados
-- **5 Facturas** de ventas
-- **5 Envíos** con seguimiento
-- **5 Garantías** activas
-- **3 Casos** de soporte técnico
+### Autenticación
+- `POST /api/auth/login` - Iniciar sesión
+
+### Inventario
+- `GET /api/inventario` - Listar productos
+- `POST /api/inventario` - Crear producto
+- `PUT /api/inventario/:id` - Actualizar producto
+- `DELETE /api/inventario/:id` - Eliminar producto
+
+### Ventas
+- `GET /api/ventas` - Listar ventas
+- `POST /api/ventas` - Crear venta
+- `GET /api/ventas/:id` - Detalle de venta
+
+### Clientes
+- `GET /api/clientes` - Listar clientes
+- `POST /api/clientes` - Crear cliente
+- `PUT /api/clientes/:id` - Actualizar cliente
+
+### Envíos
+- `GET /api/envios` - Listar envíos
+- `POST /api/envios` - Crear envío
+- `GET /api/envios/:id` - Detalles de envío
+
+### Soporte
+- `GET /api/soporte` - Listar casos
+- `POST /api/soporte` - Crear caso
+- `PUT /api/soporte/:id` - Actualizar caso
+
+*Ver documentación completa de API en `/server/routes`*
 
 ---
 
-## 🔧 Scripts Disponibles
+## 🎨 Módulos Disponibles
 
+1. **Dashboard** - Resumen y métricas principales
+2. **Inventario** - Gestión de productos
+3. **Ventas** - Registro de transacciones
+4. **Clientes** - Base de datos de clientes
+5. **Soporte Técnico** - Casos y tickets
+6. **Seguimiento de Envíos** - Logística
+7. **Garantías** - Gestión de garantías
+8. **Reportes** - Análisis y estadísticas
+9. **Usuarios** - Gestión de cuentas
+10. **Categorías** - Clasificación de productos
+11. **Configuración de Recibos** - Personalización
+
+---
+
+## 🔧 Configuración Avanzada
+
+### Variables de Entorno
+Crear archivo `.env` en la carpeta `server/`:
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=tu_contraseña
+DB_NAME=compursatil
+PORT=3001
+JWT_SECRET=tu_secreto_super_seguro
+```
+
+### Personalización
+- Modificar roles y permisos en `src/App.jsx`
+- Ajustar estilos Tailwind en `tailwind.config.js`
+- Configurar base de datos en `server/config/database.js`
+
+---
+
+## 📦 Datos de Prueba Incluidos
+
+- ✅ 5 productos en inventario
+- ✅ 3 clientes registrados
+- ✅ 5 registros de ventas
+- ✅ 5 envíos con seguimiento
+- ✅ 5 garantías activas
+- ✅ 3 casos de soporte técnico
+
+---
+
+## 🐛 Troubleshooting
+
+### Error: "Cannot find module 'mysql2'"
 ```bash
-# Frontend
-npm run dev          # Inicia servidor Vite en desarrollo
-npm run build        # Compila para producción
-npm run preview      # Vista previa del build
-
-# Backend (desde carpeta server/)
-npm start            # Inicia servidor Express
-node init-db.js      # Crea la base de datos
-node insert-test-data.js  # Inserta datos de prueba
+cd server && npm install && cd ..
 ```
 
----
-
-## 🌐 Despliegue
-
-### GitHub Pages (Frontend)
+### Error: "Port 3001 already in use"
 ```bash
-git push origin main
-# El workflow automático publicará en:
-# https://crispand03.github.io/compursatil-app02/
+# Windows
+netstat -ano | findstr :3001
+taskkill /PID <PID> /F
+
+# Linux/Mac
+lsof -i :3001
+kill -9 <PID>
 ```
 
-### Alternativas de Despliegue
-- **Vercel** - Para el frontend React
-- **Render/Railway** - Para el backend Node.js
-- **DigitalOcean** - Stack completo
-
-Ver [WEB_DEPLOYMENT.md](./WEB_DEPLOYMENT.md) para instrucciones detalladas.
+### Base de datos no conecta
+- Verificar MySQL está ejecutándose
+- Revisar credenciales en `server/config/database.js`
+- Ejecutar `node server/init-db.js` nuevamente
 
 ---
 
-## 📚 Documentación
+## 📖 Documentación Adicional
 
-- [SETUP_COMPLETE.md](./SETUP_COMPLETE.md) - Guía de configuración
-- [WEB_DEPLOYMENT.md](./WEB_DEPLOYMENT.md) - Despliegue en web
-- [DATABASE_SETUP.md](./DATABASE_SETUP.md) - Configuración de BD
-- [GITHUB_SETUP.md](./GITHUB_SETUP.md) - Setup de GitHub
-
----
-
-## 🎨 Tecnologías Utilizadas
-
-<table>
-<tr>
-<td align="center" width="100">
-<b>Frontend</b><br/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg" width="50">
-<br/>React 19
-</td>
-<td align="center" width="100">
-<b>Build</b><br/>
-<img src="https://vitejs.dev/logo.svg" width="50">
-<br/>Vite 7
-</td>
-<td align="center" width="100">
-<b>Estilos</b><br/>
-<img src="https://tailwindcss.com/_next/static/media/tailwindcss-mark.3c5441fc7a190fb1800d14c21fb7ee5a.svg" width="50">
-<br/>Tailwind CSS
-</td>
-<td align="center" width="100">
-<b>Backend</b><br/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original.svg" width="50">
-<br/>Node.js
-</td>
-</tr>
-<tr>
-<td align="center" width="100">
-<b>API</b><br/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original.svg" width="50">
-<br/>Express
-</td>
-<td align="center" width="100">
-<b>BD</b><br/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original.svg" width="50">
-<br/>MySQL 8
-</td>
-<td align="center" width="100">
-<b>Auth</b><br/>
-<img src="https://jwt.io/img/pic_logo.svg" width="50">
-<br/>JWT
-</td>
-<td align="center" width="100">
-<b>Seguridad</b><br/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/npm/npm-original-wordmark.svg" width="50">
-<br/>bcryptjs
-</td>
-</tr>
-</table>
-
----
-
-## 📈 Estadísticas del Proyecto
-
-| Métrica | Valor |
-|---------|-------|
-| Líneas de Código | 4,500+ |
-| Componentes React | 11+ módulos |
-| Rutas API | 11 endpoints |
-| Tablas de BD | 18 |
-| Funcionalidades | 50+ |
-| Tiempo de Desarrollo | Completo |
+- [Guía de Despliegue Web](./WEB_DEPLOYMENT.md)
+- [Setup de GitHub](./GITHUB_SETUP.md)
+- [Setup de Base de Datos](./DATABASE_SETUP.md)
 
 ---
 
 ## 🤝 Contribuciones
 
-Las contribuciones son bienvenidas. Por favor:
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+Las contribuciones son bienvenidas. Para cambios mayores, abre un issue primero para discutir los cambios propuestos.
 
 ---
 
-## 📝 Licencia
+## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
 
 ---
 
 ## 👨‍💻 Autor
 
-**Cristian Pando**
-- GitHub: [@crispand03](https://github.com/crispand03)
-- Email: cristian@example.com
+Desarrollado por **[crispand03](https://github.com/crispand03)**
 
 ---
 
-## 🙏 Agradecimientos
+## 📞 Soporte
 
-- React y Vite por las herramientas increíbles
-- Tailwind CSS por los estilos modernos
-- MySQL por la base de datos confiable
-- La comunidad de código abierto
+Para reportar problemas, abre un [Issue en GitHub](https://github.com/crispand03/compursatil-app02/issues)
 
 ---
 
-<div align="center">
+## 🎉 ¡Gracias por usar COMPURSATIL!
 
-**¡Hecho con ❤️ para mejorar la gestión de tu negocio!**
-
-[⬆ Volver arriba](#-compursatil---sistema-de-gestión-de-inventarios-y-ventas)
-
-</div>
+**Optimiza tu negocio hoy mismo.** 🚀

@@ -45,7 +45,8 @@ import {
   AlertCircle,
   PlusCircle,
   MinusCircle,
-  Truck
+  Truck,
+  Zap
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
@@ -65,23 +66,23 @@ const LoginComponent = ({ handleLogin, loginError, showPassword, setShowPassword
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">COMPURSATIL</h1>
-          <p className="text-gray-600">Sistema de Gestión de Inventarios</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center p-2 sm:p-3 md:p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 w-full max-w-md">
+        <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">COMPURSATIL</h1>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">Sistema de Gestión de Inventarios</p>
         </div>
         
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-3 sm:space-y-4 md:space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
               Nombre de usuario
             </label>
             <input
               ref={usernameInputRef}
               type="text"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-              placeholder="Ingrese su usuario"
+              className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-xs sm:text-sm"
+              placeholder="Usuario"
               defaultValue=""
               required
               autoFocus
@@ -89,15 +90,15 @@ const LoginComponent = ({ handleLogin, loginError, showPassword, setShowPassword
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
               Contraseña
             </label>
             <div className="relative">
               <input
                 ref={passwordInputRef}
                 type={showPassword ? "text" : "password"}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12 outline-none"
-                placeholder="Ingrese su contraseña"
+                className="w-full px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-8 sm:pr-10 md:pr-12 outline-none text-xs sm:text-sm"
+                placeholder="Contraseña"
                 defaultValue=""
                 required
               />
@@ -108,34 +109,34 @@ const LoginComponent = ({ handleLogin, loginError, showPassword, setShowPassword
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 pointer-events-auto"
+                className="absolute right-2 sm:right-2.5 md:right-3 top-2 sm:top-2.5 md:top-3 text-gray-400 hover:text-gray-600 pointer-events-auto"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={16} className="sm:w-5 sm:h-5" /> : <Eye size={16} className="sm:w-5 sm:h-5" />}
               </button>
             </div>
           </div>
           
           {loginError && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
+            <div className="bg-red-50 text-red-600 p-2 sm:p-3 rounded-lg text-xs sm:text-sm">
               {loginError}
             </div>
           )}
           
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="w-full bg-blue-600 text-white py-2 sm:py-2.5 md:py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-xs sm:text-sm"
           >
             Iniciar Sesión
           </button>
         </form>
         
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p className="font-semibold mb-2">Credenciales de Prueba:</p>
-          <div className="bg-gray-50 rounded p-3 space-y-1.5">
-            <p><span className="font-medium text-blue-600">Gerente:</span> gerente / gerente123</p>
-            <p><span className="font-medium text-green-600">Admin:</span> admin / admin123</p>
-            <p><span className="font-medium text-orange-600">Vendedor:</span> vendedor / venta123</p>
-            <p><span className="font-medium text-purple-600">Soporte:</span> soporte / sop123</p>
+        <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600">
+          <p className="font-semibold mb-1.5 sm:mb-2">Credenciales de Prueba:</p>
+          <div className="bg-gray-50 rounded p-2 sm:p-3 space-y-1">
+            <p><span className="font-medium text-blue-600 text-xs">Gerente:</span> <span className="text-xs">gerente / gerente123</span></p>
+            <p><span className="font-medium text-green-600 text-xs">Admin:</span> <span className="text-xs">admin / admin123</span></p>
+            <p><span className="font-medium text-orange-600 text-xs">Vendedor:</span> <span className="text-xs">vendedor / venta123</span></p>
+            <p><span className="font-medium text-purple-600 text-xs">Soporte:</span> <span className="text-xs">soporte / sop123</span></p>
           </div>
         </div>
       </div>
@@ -233,7 +234,16 @@ const App = () => {
           time: sale.hora,
           customer: sale.cliente_nombre,
           customerId: sale.cliente_id,
-          items: [],
+          items: (sale.detalles || []).map(detalle => ({
+            id: detalle.inventario_id,
+            name: `${detalle.marca} ${detalle.modelo}`,
+            serial: detalle.numero_serie,
+            quantity: detalle.cantidad,
+            price: detalle.precio_unitario,
+            subtotal: detalle.subtotal,
+            igv: detalle.igv,
+            total: detalle.total
+          })),
           total: sale.total,
           sellerName: sale.vendedor_nombre,
           seller: sale.vendedor_nombre,
@@ -451,47 +461,302 @@ const App = () => {
     localStorage.removeItem('currentUser');
   };
 
+  // Helper function to map inventory data from backend to frontend format
+  const mapInventoryItem = (item) => ({
+    id: item.id,
+    brand: item.marca,
+    model: item.modelo,
+    serial: item.numero_serie,
+    ram: item.especificaciones_ram,
+    storage: item.especificaciones_almacenamiento,
+    processor: item.especificaciones_procesador,
+    gpu: item.especificaciones_gpu || '',
+    screen: item.especificaciones_pantalla || '',
+    os: item.especificaciones_so || '',
+    status: item.estado,
+    supplier: item.proveedor_nombre || 'Desconocido',
+    cost: item.costo_unitario,
+    price: item.precio_venta,
+    stock: item.stock,
+    image: item.imagen || 'https://placehold.co/300x200/cccccc/666666?text=No+Image',
+    addedDate: item.fecha_ingreso
+  });
+
   // CRUD Operations
-  const addInventoryItem = (newItem) => {
-    const itemWithId = {
-      ...newItem,
-      id: inventory.length + 1,
-      image: newItem.image || `https://placehold.co/300x200/6366f1/white?text=${encodeURIComponent(newItem.brand + ' ' + newItem.model)}`,
-      addedDate: new Date().toISOString().split('T')[0]
-    };
-    setInventory([...inventory, itemWithId]);
+  // Helper function to clean undefined values before sending to backend
+  const cleanItemData = (item) => {
+    const cleaned = {};
+    Object.keys(item).forEach(key => {
+      if (item[key] === undefined || item[key] === '') {
+        cleaned[key] = null;
+      } else {
+        cleaned[key] = item[key];
+      }
+    });
+    return cleaned;
   };
 
-  const updateInventoryItem = (updatedItem) => {
-    setInventory(inventory.map(item => 
-      item.id === updatedItem.id ? updatedItem : item
-    ));
-  };
-
-  const deleteInventoryItem = (id) => {
-    if (window.confirm('¿Está seguro de eliminar este equipo del inventario?')) {
-      setInventory(inventory.filter(item => item.id !== id));
+  const addInventoryItem = async (newItem) => {
+    try {
+      let itemData = {
+        marca: newItem.brand,
+        modelo: newItem.model,
+        numero_serie: newItem.serial,
+        especificaciones_ram: newItem.ram,
+        especificaciones_almacenamiento: newItem.storage,
+        especificaciones_procesador: newItem.processor,
+        especificaciones_gpu: newItem.gpu,
+        especificaciones_pantalla: newItem.screen,
+        especificaciones_so: newItem.os,
+        estado: newItem.status,
+        proveedor_nombre: newItem.supplier,
+        costo_unitario: newItem.cost ? parseFloat(newItem.cost) : 0,
+        precio_venta: newItem.price ? parseFloat(newItem.price) : 0,
+        stock: newItem.stock ? parseInt(newItem.stock) : 0,
+        imagen: newItem.image
+      };
+      itemData = cleanItemData(itemData);
+      
+      const response = await fetch(`${API_BASE}/inventario`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(itemData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload inventory from backend
+        const invRes = await fetch(`${API_BASE}/inventario`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const invData = await invRes.json();
+        if (invData.success) {
+          const processedInventory = (invData.data || []).map(mapInventoryItem);
+          setInventory(processedInventory);
+          alert('Equipo agregado exitosamente');
+        }
+      } else {
+        alert('Error al agregar item: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error adding inventory item:', error);
+      alert('Error al agregar equipo al inventario');
     }
   };
 
-  const addCustomer = (newCustomer) => {
-    const customerWithId = {
-      ...newCustomer,
-      id: customers.length + 1
-    };
-    setCustomers([...customers, customerWithId]);
-    return customerWithId;
+  const updateInventoryItem = async (updatedItem) => {
+    try {
+      let itemData = {
+        marca: updatedItem.brand,
+        modelo: updatedItem.model,
+        numero_serie: updatedItem.serial,
+        especificaciones_ram: updatedItem.ram,
+        especificaciones_almacenamiento: updatedItem.storage,
+        especificaciones_procesador: updatedItem.processor,
+        especificaciones_gpu: updatedItem.gpu,
+        especificaciones_pantalla: updatedItem.screen,
+        especificaciones_so: updatedItem.os,
+        estado: updatedItem.status,
+        proveedor_nombre: updatedItem.supplier,
+        costo_unitario: updatedItem.cost ? parseFloat(updatedItem.cost) : 0,
+        precio_venta: updatedItem.price ? parseFloat(updatedItem.price) : 0,
+        stock: updatedItem.stock ? parseInt(updatedItem.stock) : 0,
+        imagen: updatedItem.image
+      };
+      itemData = cleanItemData(itemData);
+      
+      const response = await fetch(`${API_BASE}/inventario/${updatedItem.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(itemData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload inventory from backend
+        const invRes = await fetch(`${API_BASE}/inventario`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const invData = await invRes.json();
+        if (invData.success) {
+          const processedInventory = (invData.data || []).map(mapInventoryItem);
+          setInventory(processedInventory);
+          alert('Equipo actualizado exitosamente');
+        }
+      } else {
+        alert('Error al actualizar item: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating inventory item:', error);
+      alert('Error al actualizar equipo');
+    }
   };
 
-  const updateCustomer = (updatedCustomer) => {
-    setCustomers(customers.map(customer => 
-      customer.id === updatedCustomer.id ? updatedCustomer : customer
-    ));
+  const deleteInventoryItem = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este equipo del inventario?')) {
+      try {
+        const response = await fetch(`${API_BASE}/inventario/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload inventory from backend
+          const invRes = await fetch(`${API_BASE}/inventario`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+          });
+          const invData = await invRes.json();
+          if (invData.success) {
+            const processedInventory = (invData.data || []).map(mapInventoryItem);
+            setInventory(processedInventory);
+            alert('Equipo eliminado exitosamente');
+          }
+        } else {
+          alert('Error al eliminar item: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting inventory item:', error);
+        alert('Error al eliminar equipo');
+      }
+    }
   };
 
-  const deleteCustomer = (id) => {
+  // Helper function to map customer data from backend to frontend format
+  const mapCustomer = (client) => ({
+    id: client.id,
+    name: client.nombre,
+    document: client.numero_documento,
+    documentType: client.tipo_documento,
+    phone: client.telefono || '',
+    email: client.email || '',
+    address: client.direccion || '',
+    city: client.ciudad || ''
+  });
+
+  const addCustomer = async (newCustomer) => {
+    try {
+      const customerData = {
+        nombre: newCustomer.name,
+        documento: newCustomer.document || '',
+        tipo_documento: newCustomer.documentType || 'DNI',
+        telefono: newCustomer.phone || '',
+        email: newCustomer.email || '',
+        direccion: newCustomer.address || ''
+      };
+      
+      const response = await fetch(`${API_BASE}/clientes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(customerData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload customers from backend
+        const customersRes = await fetch(`${API_BASE}/clientes`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const customersData = await customersRes.json();
+        if (customersData.success) {
+          const processedCustomers = (customersData.data || []).map(mapCustomer);
+          setCustomers(processedCustomers);
+          alert('Cliente agregado exitosamente');
+        }
+        // Return the created customer
+        return { id: result.id, ...newCustomer };
+      } else {
+        alert('Error al crear cliente: ' + result.message);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error adding customer:', error);
+      alert('Error al crear cliente');
+      return null;
+    }
+  };
+
+  const updateCustomer = async (updatedCustomer) => {
+    try {
+      const customerData = {
+        nombre: updatedCustomer.name,
+        documento: updatedCustomer.document || '',
+        tipo_documento: updatedCustomer.documentType || 'DNI',
+        telefono: updatedCustomer.phone || '',
+        email: updatedCustomer.email || '',
+        direccion: updatedCustomer.address || ''
+      };
+      
+      const response = await fetch(`${API_BASE}/clientes/${updatedCustomer.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(customerData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload customers from backend
+        const customersRes = await fetch(`${API_BASE}/clientes`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const customersData = await customersRes.json();
+        if (customersData.success) {
+          const processedCustomers = (customersData.data || []).map(mapCustomer);
+          setCustomers(processedCustomers);
+          alert('Cliente actualizado exitosamente');
+        }
+      } else {
+        alert('Error al actualizar cliente: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      alert('Error al actualizar cliente');
+    }
+  };
+
+  const deleteCustomer = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este cliente?')) {
-      setCustomers(customers.filter(customer => customer.id !== id));
+      try {
+        const response = await fetch(`${API_BASE}/clientes/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload customers from backend
+          const customersRes = await fetch(`${API_BASE}/clientes`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+          });
+          const customersData = await customersRes.json();
+          if (customersData.success) {
+            const processedCustomers = (customersData.data || []).map(mapCustomer);
+            setCustomers(processedCustomers);
+            alert('Cliente eliminado exitosamente');
+          }
+        } else {
+          alert('Error al eliminar cliente: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting customer:', error);
+        alert('Error al eliminar cliente');
+      }
     }
   };
 
@@ -499,6 +764,24 @@ const App = () => {
     const subtotal = price / 1.18;
     const igv = price - subtotal;
     return { subtotal: parseFloat(subtotal.toFixed(2)), igv: parseFloat(igv.toFixed(2)) };
+  };
+
+  // Helper function to format date from ISO to DD/MM/YYYY
+  const formatDate = (isoDate) => {
+    if (!isoDate) return '';
+    // Si ya está en formato DD/MM/YYYY, devolverlo tal cual
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(isoDate)) {
+      return isoDate;
+    }
+    // Si es ISO string (2025-12-08 o 2025-12-08T...)
+    const date = new Date(isoDate);
+    if (isNaN(date.getTime())) {
+      return isoDate; // Si no se puede parsear, devolver original
+    }
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const generateDocumentNumber = (documentType) => {
@@ -525,71 +808,245 @@ const App = () => {
     return !existing;
   };
 
-  const addSale = (newSale) => {
-    // Calculate IGV for each item
-    const itemsWithIGV = newSale.items.map(item => {
-      const { subtotal, igv } = calculateIGV(item.price);
-      return { ...item, subtotal, igv };
-    });
-    
-    const saleWithId = {
-      ...newSale,
-      items: itemsWithIGV,
-      id: sales.length + 1,
-      date: newSale.date || new Date().toISOString().split('T')[0],
-      time: newSale.time || new Date().toLocaleTimeString(),
-      seller: currentUser.name
-    };
-    setSales([...sales, saleWithId]);
-    
-    // Update inventory stock
-    const updatedInventory = inventory.map(item => {
-      const soldItem = newSale.items.find(sold => sold.id === item.id);
-      if (soldItem) {
-        return { ...item, stock: item.stock - soldItem.quantity };
+  const addSale = async (newSale) => {
+    try {
+      // Calculate IGV for each item
+      const itemsWithIGV = newSale.items.map(item => {
+        const { subtotal, igv } = calculateIGV(item.price);
+        return { ...item, subtotal, igv };
+      });
+      
+      const totalAmount = itemsWithIGV.reduce((sum, item) => sum + (item.price || 0), 0);
+      const igvTotal = itemsWithIGV.reduce((sum, item) => sum + (item.igv || 0), 0);
+      const subtotalAmount = totalAmount - igvTotal;
+      
+      // Prepare data for backend
+      const saleData = {
+        cliente_id: parseInt(newSale.customerId),
+        vendedor_id: currentUser.id || 1,
+        tipo_documento: newSale.documentType,
+        numero_documento: newSale.documentNumber,
+        fecha: newSale.date,
+        hora: newSale.time,
+        subtotal: subtotalAmount,
+        igv: igvTotal,
+        total: totalAmount,
+        metodo_pago: newSale.payment,
+        observaciones: newSale.observations || '',
+        detalles: newSale.items.map(item => ({
+          id: item.id,
+          quantity: item.quantity || 1,
+          equipmentBasePrice: item.equipmentBasePrice || item.price,
+          extrasPrice: item.extrasPrice || 0,
+          price: item.price,
+          subtotal: item.subtotal,
+          igv: item.igv,
+          total: item.price,
+          extras: item.extras || []
+        }))
+      };
+      
+      const response = await fetch(`${API_BASE}/ventas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(saleData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload sales from backend
+        const salesRes = await fetch(`${API_BASE}/ventas`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const salesData = await salesRes.json();
+        if (salesData.success) {
+          const processedSales = (salesData.data || []).map(sale => ({
+            id: sale.id,
+            customer: sale.cliente_nombre,
+            customerId: sale.cliente_id,
+            seller: sale.vendedor_nombre,
+            sellerId: sale.vendedor_id,
+            payment: sale.metodo_pago,
+            documentType: sale.tipo_documento,
+            documentNumber: sale.numero_documento,
+            date: sale.fecha,
+            time: sale.hora,
+            observations: sale.observaciones,
+            items: (sale.detalles || []).map(detalle => ({
+              id: detalle.inventario_id,
+              name: `${detalle.marca} ${detalle.modelo}`,
+              serial: detalle.numero_serie,
+              quantity: detalle.cantidad,
+              price: detalle.precio_unitario,
+              subtotal: detalle.subtotal,
+              igv: detalle.igv,
+              total: detalle.total
+            })),
+            total: sale.total,
+            status: sale.estado
+          }));
+          setSales(processedSales);
+          alert('Venta registrada exitosamente');
+        }
+      } else {
+        alert('Error al guardar la venta: ' + result.message);
       }
-      return item;
-    });
-    setInventory(updatedInventory);
-    
-    // Create warranty for each item sold
-    newSale.items.forEach(item => {
-      const invItem = inventory.find(i => i.id === item.id);
-      if (invItem) {
-        const warranty = {
-          id: warranties.length + 1,
-          serial: invItem.serial,
-          customerId: parseInt(newSale.customerId),
-          startDate: new Date().toISOString().split('T')[0],
-          endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
-          status: 'Activa',
-          saleId: saleWithId.id,
-          warrantyType: 'Fabricante',
-          technicalSupportId: null
-        };
-        setWarranties([...warranties, warranty]);
-      }
-    });
+    } catch (error) {
+      console.error('Error adding sale:', error);
+      alert('Error al guardar la venta');
+    }
   };
 
   
-  const updateSale = (updatedSale) => {
-    // Recalculate IGV for updated items
-    const itemsWithIGV = updatedSale.items.map(item => {
-      const { subtotal, igv } = calculateIGV(item.price);
-      return { ...item, subtotal, igv };
-    });
-    const total = itemsWithIGV.reduce((sum, it) => sum + (it.price || 0), 0);
-    
-    setSales(sales.map(sale => 
-      sale.id === updatedSale.id ? { ...updatedSale, items: itemsWithIGV, total } : sale
-    ));
+  const updateSale = async (updatedSale) => {
+    try {
+      // Validate ID exists
+      if (!updatedSale.id) {
+        alert('Error: No se puede actualizar sin ID de venta');
+        console.error('updateSale missing ID:', updatedSale);
+        return;
+      }
+
+      console.log('updateSale called with ID:', updatedSale.id);
+      console.log('Items to update:', updatedSale.items);
+
+      // Recalculate IGV for updated items
+      const itemsWithIGV = updatedSale.items.map(item => {
+        const { subtotal, igv } = calculateIGV(item.price);
+        return { ...item, subtotal, igv };
+      });
+      const totalAmount = itemsWithIGV.reduce((sum, it) => sum + (it.price || 0), 0);
+      const igvTotal = itemsWithIGV.reduce((sum, item) => sum + (item.igv || 0), 0);
+      const subtotalAmount = totalAmount - igvTotal;
+      
+      // Prepare data for backend - INCLUDE ITEMS
+      const saleData = {
+        subtotal: subtotalAmount,
+        igv: igvTotal,
+        total: totalAmount,
+        metodo_pago: updatedSale.payment,
+        observaciones: updatedSale.observations || '',
+        estado: updatedSale.status || 'Completada',
+        items: itemsWithIGV  // Send items to backend
+      };
+      
+      console.log('Sending update to backend with data:', saleData);
+      
+      const response = await fetch(`${API_BASE}/ventas/${updatedSale.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(saleData)
+      });
+      
+      const result = await response.json();
+      console.log('Backend response:', result);
+      
+      if (result.success) {
+        // Recargar ventas desde el servidor para obtener datos actualizados
+        console.log('Update successful, reloading sales...');
+        const salesRes = await fetch(`${API_BASE}/ventas`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const salesData = await salesRes.json();
+        if (salesData.success) {
+          const processedSales = (salesData.data || []).map(sale => ({
+            id: sale.id,
+            customer: sale.cliente_nombre,
+            customerId: sale.cliente_id,
+            seller: sale.vendedor_nombre,
+            sellerId: sale.vendedor_id,
+            payment: sale.metodo_pago,
+            documentType: sale.tipo_documento,
+            documentNumber: sale.numero_documento,
+            date: sale.fecha,
+            time: sale.hora,
+            observations: sale.observaciones,
+            items: (sale.detalles || []).map(detalle => ({
+              id: detalle.inventario_id,
+              name: `${detalle.marca} ${detalle.modelo}`,
+              serial: detalle.numero_serie,
+              quantity: detalle.cantidad,
+              price: detalle.precio_unitario,
+              subtotal: detalle.subtotal,
+              igv: detalle.igv,
+              total: detalle.total
+            })),
+            total: sale.total,
+            status: sale.estado
+          }));
+          setSales(processedSales);
+          console.log('Sales reloaded successfully:', processedSales.length);
+          alert('Venta actualizada exitosamente');
+        }
+      } else {
+        alert('Error al actualizar la venta: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating sale:', error);
+      alert('Error al actualizar la venta');
+    }
   };
 
 
-  const deleteSale = (id) => {
+  const deleteSale = async (id) => {
     if (window.confirm('¿Está seguro de eliminar esta venta?')) {
-      setSales(sales.filter(sale => sale.id !== id));
+      try {
+        const response = await fetch(`${API_BASE}/ventas/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload sales from backend
+          const salesRes = await fetch(`${API_BASE}/ventas`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+          });
+          const salesData = await salesRes.json();
+          if (salesData.success) {
+            const processedSales = (salesData.data || []).map(sale => ({
+              id: sale.id,
+              customer: sale.cliente_nombre,
+              customerId: sale.cliente_id,
+              seller: sale.vendedor_nombre,
+              sellerId: sale.vendedor_id,
+              payment: sale.metodo_pago,
+              documentType: sale.tipo_documento,
+              documentNumber: sale.numero_documento,
+              date: sale.fecha,
+              time: sale.hora,
+              observations: sale.observaciones,
+              items: (sale.detalles || []).map(detalle => ({
+                id: detalle.inventario_id,
+                name: `${detalle.marca} ${detalle.modelo}`,
+                serial: detalle.numero_serie,
+                quantity: detalle.cantidad,
+                price: detalle.precio_unitario,
+                subtotal: detalle.subtotal,
+                igv: detalle.igv,
+                total: detalle.total
+              })),
+              total: sale.total,
+              status: sale.estado
+            }));
+            setSales(processedSales);
+            alert('Venta eliminada exitosamente');
+          }
+        } else {
+          alert('Error al eliminar la venta: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting sale:', error);
+        alert('Error al eliminar la venta');
+      }
     }
   };
 
@@ -604,15 +1061,71 @@ const App = () => {
     setTechnicalCases([...technicalCases, caseWithId]);
   };
 
-  const updateTechnicalCase = (updatedCase) => {
-    setTechnicalCases(technicalCases.map(techCase => 
-      techCase.id === updatedCase.id ? updatedCase : techCase
-    ));
+  const updateTechnicalCase = async (updatedCase) => {
+    try {
+      const caseData = {
+        cliente_id: updatedCase.customerId,
+        descripcion: updatedCase.description || '',
+        estado: updatedCase.status || 'En proceso',
+        diagnostico: updatedCase.diagnostico || '',
+        solucion: updatedCase.solucion || ''
+      };
+      
+      const response = await fetch(`${API_BASE}/soporte/${updatedCase.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(caseData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload technical cases from backend
+        const casesRes = await fetch(`${API_BASE}/soporte`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const casesData = await casesRes.json();
+        if (casesData.success) {
+          setTechnicalCases(casesData.data || []);
+        }
+      } else {
+        alert('Error al actualizar caso: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating technical case:', error);
+      alert('Error al actualizar caso técnico');
+    }
   };
 
-  const deleteTechnicalCase = (id) => {
+  const deleteTechnicalCase = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este caso técnico?')) {
-      setTechnicalCases(technicalCases.filter(techCase => techCase.id !== id));
+      try {
+        const response = await fetch(`${API_BASE}/soporte/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload technical cases from backend
+          const casesRes = await fetch(`${API_BASE}/soporte`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+          });
+          const casesData = await casesRes.json();
+          if (casesData.success) {
+            setTechnicalCases(casesData.data || []);
+          }
+        } else {
+          alert('Error al eliminar caso: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting technical case:', error);
+        alert('Error al eliminar caso técnico');
+      }
     }
   };
 
@@ -632,17 +1145,82 @@ const App = () => {
     }
   };
 
-  const addExtraComponent = (newExtra) => {
-    const extraWithId = {
-      ...newExtra,
-      id: extraComponents.length + 1
-    };
-    setExtraComponents([...extraComponents, extraWithId]);
+  // Helper function to map extra component data from backend to frontend format
+  const mapExtraComponent = (extra) => ({
+    id: extra.id,
+    name: extra.nombre,
+    price: extra.precio,
+    category: extra.categoria || ''
+  });
+
+  const addExtraComponent = async (newExtra) => {
+    try {
+      const extraData = {
+        nombre: newExtra.name,
+        descripcion: newExtra.description || '',
+        precio: parseFloat(newExtra.price) || 0,
+        categoria: newExtra.category || 'General'
+      };
+      
+      const response = await fetch(`${API_BASE}/extras`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify(extraData)
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        // Reload extras from backend
+        const extrasRes = await fetch(`${API_BASE}/extras`, {
+          headers: { 'Authorization': `Bearer ${currentUser.token}` }
+        });
+        const extrasData = await extrasRes.json();
+        if (extrasData.success) {
+          const processedExtras = (extrasData.data || []).map(mapExtraComponent);
+          setExtraComponents(processedExtras);
+          alert('Componente extra agregado exitosamente');
+        }
+      } else {
+        alert('Error al agregar componente: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error adding extra component:', error);
+      alert('Error al agregar componente extra');
+    }
   };
 
-  const deleteExtraComponent = (id) => {
+  const deleteExtraComponent = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este componente extra?')) {
-      setExtraComponents(extraComponents.filter(extra => extra.id !== id));
+      try {
+        const response = await fetch(`${API_BASE}/extras/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${currentUser.token}`
+          }
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+          // Reload extras from backend
+          const extrasRes = await fetch(`${API_BASE}/extras`, {
+            headers: { 'Authorization': `Bearer ${currentUser.token}` }
+          });
+          const extrasData = await extrasRes.json();
+          if (extrasData.success) {
+            const processedExtras = (extrasData.data || []).map(mapExtraComponent);
+            setExtraComponents(processedExtras);
+            alert('Componente extra eliminado exitosamente');
+          }
+        } else {
+          alert('Error al eliminar componente: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error deleting extra component:', error);
+        alert('Error al eliminar componente extra');
+      }
     }
   };
 
@@ -665,21 +1243,21 @@ const App = () => {
   );
 
   const Sidebar = () => (
-    <div className={`bg-gray-800 text-white min-h-screen transition-all duration-300 flex flex-col fixed left-0 top-0 h-screen ${
-      sidebarCollapsed ? 'w-16' : 'w-64'
+    <div className={`fixed left-0 top-0 h-screen bg-gray-800 text-white min-h-screen transition-all duration-300 flex flex-col z-50 ${
+      sidebarCollapsed ? 'w-16 sm:w-16 md:w-16 lg:w-20' : 'w-48 sm:w-56 md:w-64 lg:w-80'
     }`}>
-      <div className="p-4 border-b border-gray-700 flex items-center justify-between">
+      <div className="p-3 sm:p-4 border-b border-gray-700 flex items-center justify-between gap-2 sm:gap-3">
         {!sidebarCollapsed && (
           <>
-            <div>
-              <h1 className="text-xl font-bold">COMPURSATIL</h1>
-              <p className="text-xs text-gray-400">Sistema de Gestión</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold truncate">COMPURSATIL</h1>
+              <p className="text-xs text-gray-400 hidden sm:block">Sistema de Gestión</p>
             </div>
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-white flex-shrink-0"
             >
-              <X size={20} />
+              <X size={18} className="sm:w-5 sm:h-5" />
             </button>
           </>
         )}
@@ -688,52 +1266,52 @@ const App = () => {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="text-gray-400 hover:text-white w-full flex justify-center"
           >
-            <Menu size={24} />
+            <Menu size={20} className="sm:w-6 sm:h-6" />
           </button>
         )}
       </div>
       
-      <div className="flex-1 overflow-y-auto">
-        <nav className="p-4">
+      <div className="flex-1 overflow-y-auto scroll-smooth">
+        <nav className="p-2 sm:p-3">
           {filteredModules.map((module) => {
             const Icon = module.icon;
             return (
               <button
                 key={module.id}
                 onClick={() => setActiveModule(module.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg mb-2 transition-colors ${
+                className={`w-full flex items-center justify-center sm:justify-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg mb-1 sm:mb-2 transition-colors text-sm sm:text-base ${
                   activeModule === module.id 
                     ? 'bg-blue-600 text-white' 
                     : 'text-gray-300 hover:bg-gray-700'
-                } ${sidebarCollapsed ? 'justify-center px-0' : ''}`}
+                } ${sidebarCollapsed ? 'px-0' : ''}`}
                 title={sidebarCollapsed ? module.name : ''}
               >
-                <Icon size={20} />
-                {!sidebarCollapsed && module.name}
+                <Icon size={18} className="sm:w-5 sm:h-5 flex-shrink-0" />
+                {!sidebarCollapsed && <span className="truncate">{module.name}</span>}
               </button>
             );
           })}
         </nav>
       </div>
 
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-2 sm:p-3 border-t border-gray-700 flex-shrink-0">
         {!sidebarCollapsed && (
-          <div className="flex items-center gap-3 mb-3">
-            <div className="bg-gray-600 rounded-full p-2">
-              <User size={20} />
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 min-w-0">
+            <div className="bg-gray-600 rounded-full p-2 flex-shrink-0">
+              <User size={16} className="sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <p className="font-medium">{currentUser.name}</p>
-              <p className="text-xs text-gray-400">{currentUser.role}</p>
+            <div className="min-w-0">
+              <p className="font-medium text-xs sm:text-sm truncate">{currentUser.name}</p>
+              <p className="text-xs text-gray-400 truncate">{currentUser.role}</p>
             </div>
           </div>
         )}
         <button 
           onClick={handleLogout}
-          className={`flex items-center gap-2 text-gray-300 hover:text-white w-full p-2 rounded transition-colors hover:bg-gray-700 ${sidebarCollapsed ? 'justify-center' : ''}`}
+          className={`flex items-center justify-center sm:justify-start gap-2 text-gray-300 hover:text-white w-full p-2 rounded transition-colors hover:bg-gray-700 text-sm sm:text-base ${sidebarCollapsed ? '' : ''}`}
           title={sidebarCollapsed ? 'Cerrar Sesión' : ''}
         >
-          <LogOut size={16} />
+          <LogOut size={16} className="sm:w-4 sm:h-4 flex-shrink-0" />
           {!sidebarCollapsed && 'Cerrar Sesión'}
         </button>
       </div>
@@ -756,8 +1334,9 @@ const App = () => {
     const totalSalesValue = sales.reduce((sum, sale) => sum + sale.total, 0);
     const lowStockItems = inventory.filter(item => item.stock <= 2).length;
     const totalSalesCount = sales.length;
-    const recentSales = sales.slice(-3).reverse();
-    const recentTechCases = technicalCases.slice(-3).reverse();
+    const completionRate = sales.length > 0 ? 95 : 0; // Mock completion rate
+    const recentSales = sales.slice(-5).reverse();
+    const recentTechCases = technicalCases.slice(-5).reverse();
     
     // Calculate sales data from real sales
     const salesByMonth = {};
@@ -781,141 +1360,490 @@ const App = () => {
     
     const maxSales = Math.max(...salesData.map(d => d.sales), 45000);
     
-    const productDistribution = inventory.reduce((acc, item) => {
-      const existing = acc.find(i => i.brand === item.brand);
+    // Payment method distribution
+    const paymentByMethod = {};
+    sales.forEach(sale => {
+      const method = sale.payment || 'No especificado';
+      if (!paymentByMethod[method]) {
+        paymentByMethod[method] = 0;
+      }
+      paymentByMethod[method] += sale.total;
+    });
+
+    const paymentData = Object.entries(paymentByMethod).map(([method, total]) => ({
+      method,
+      total,
+      percentage: ((total / totalSalesValue) * 100).toFixed(1)
+    }));
+
+    const paymentColors = {
+      'Efectivo': '#10B981',
+      'Tarjeta': '#3B82F6',
+      'Transferencia': '#8B5CF6',
+      'Cheque': '#F59E0B',
+      'No especificado': '#6B7280'
+    };
+
+    // Sales status distribution
+    const statusByType = {};
+    sales.forEach(sale => {
+      const status = sale.status || 'Completada';
+      if (!statusByType[status]) {
+        statusByType[status] = 0;
+      }
+      statusByType[status] += 1;
+    });
+
+    const statusData = Object.entries(statusByType).map(([status, count]) => ({
+      status,
+      count,
+      percentage: ((count / totalSalesCount) * 100).toFixed(1)
+    }));
+
+    const statusColors = {
+      'Completada': '#10B981',
+      'Pendiente': '#F59E0B',
+      'Cancelada': '#EF4444',
+      'En proceso': '#3B82F6'
+    };
+
+    // Product categories distribution
+    const categoryByBrand = {};
+    inventory.forEach(item => {
+      if (!categoryByBrand[item.brand]) {
+        categoryByBrand[item.brand] = 0;
+      }
+      categoryByBrand[item.brand] += item.stock;
+    });
+
+    const categoryData = Object.entries(categoryByBrand)
+      .map(([brand, stock]) => ({
+        brand,
+        stock,
+        percentage: ((stock / inventory.reduce((sum, i) => sum + i.stock, 0)) * 100).toFixed(1)
+      }))
+      .sort((a, b) => b.stock - a.stock)
+      .slice(0, 5);
+
+    const brandColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+
+    const topVendors = sales.reduce((acc, sale) => {
+      const existing = acc.find(v => v.seller === sale.seller);
       if (existing) {
-        existing.count += item.stock;
+        existing.sales += 1;
+        existing.total += sale.total;
       } else {
-        acc.push({ brand: item.brand, count: item.stock });
+        acc.push({ seller: sale.seller, sales: 1, total: sale.total });
       }
       return acc;
-    }, []);
+    }, []).sort((a, b) => b.total - a.total).slice(0, 5);
+
+    const topProducts = sales.reduce((acc, sale) => {
+      sale.items?.forEach(item => {
+        const existing = acc.find(p => p.name === item.name);
+        if (existing) {
+          existing.quantity += item.quantity;
+          existing.revenue += item.price * item.quantity;
+        } else {
+          acc.push({ name: item.name, quantity: item.quantity, revenue: item.price * item.quantity });
+        }
+      });
+      return acc;
+    }, []).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
+    // Helper function for circular progress
+    const CircularProgress = ({ percentage, label, color }) => {
+      const circumference = 2 * Math.PI * 45;
+      const strokeDashoffset = circumference - (percentage / 100) * circumference;
+      
+      return (
+        <div className="flex flex-col items-center">
+          <div className="relative w-32 h-32">
+            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="45" stroke="#E5E7EB" strokeWidth="8" fill="none" />
+              <circle
+                cx="60"
+                cy="60"
+                r="45"
+                stroke={color}
+                strokeWidth="8"
+                fill="none"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className="transition-all duration-500"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-gray-800">{percentage}%</span>
+              <span className="text-xs text-gray-600 text-center px-2">{label}</span>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    // Helper function for donut chart
+    const DonutChart = ({ data, colors, innerRadius = 55, outerRadius = 80 }) => {
+      let currentAngle = -Math.PI / 2;
+      const total = data.reduce((sum, item) => sum + (item.total || item.count || item.stock), 0);
+      
+      const segments = data.map((item, index) => {
+        const value = item.total || item.count || item.stock;
+        const sliceAngle = (value / total) * 2 * Math.PI;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + sliceAngle;
+        
+        const startX = 100 + outerRadius * Math.cos(startAngle);
+        const startY = 100 + outerRadius * Math.sin(startAngle);
+        const endX = 100 + outerRadius * Math.cos(endAngle);
+        const endY = 100 + outerRadius * Math.sin(endAngle);
+        
+        const innerStartX = 100 + innerRadius * Math.cos(startAngle);
+        const innerStartY = 100 + innerRadius * Math.sin(startAngle);
+        const innerEndX = 100 + innerRadius * Math.cos(endAngle);
+        const innerEndY = 100 + innerRadius * Math.sin(endAngle);
+        
+        const largeArc = sliceAngle > Math.PI ? 1 : 0;
+        
+        const pathData = [
+          `M ${startX} ${startY}`,
+          `A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${endX} ${endY}`,
+          `L ${innerEndX} ${innerEndY}`,
+          `A ${innerRadius} ${innerRadius} 0 ${largeArc} 0 ${innerStartX} ${innerStartY}`,
+          'Z'
+        ].join(' ');
+        
+        const midAngle = startAngle + sliceAngle / 2;
+        const labelRadius = (innerRadius + outerRadius) / 2;
+        const labelX = 100 + labelRadius * Math.cos(midAngle);
+        const labelY = 100 + labelRadius * Math.sin(midAngle);
+        
+        currentAngle = endAngle;
+        
+        return {
+          path: pathData,
+          color: colors[index % colors.length],
+          labelX,
+          labelY,
+          label: `${item.percentage}%`,
+          value: item
+        };
+      });
+      
+      return (
+        <svg viewBox="0 0 200 200" className="w-full h-full">
+          {segments.map((segment, index) => (
+            <g key={index}>
+              <path d={segment.path} fill={segment.color} stroke="white" strokeWidth="2" />
+              {parseFloat(segment.value.percentage) > 5 && (
+                <text
+                  x={segment.labelX}
+                  y={segment.labelY}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  className="text-xs font-bold fill-white"
+                  style={{ pointerEvents: 'none' }}
+                >
+                  {segment.label}
+                </text>
+              )}
+            </g>
+          ))}
+        </svg>
+      );
+    };
     
     return (
-      <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">Dashboard - COMPURSATIL</h2>
+      <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-3 py-4 sm:px-4 sm:py-5 md:px-6 md:py-6 lg:px-8 lg:py-8">
+        {/* Header */}
+        <div className="mb-5 sm:mb-6 md:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">Bienvenido de vuelta, {currentUser?.name}!</h1>
+          <p className="text-xs sm:text-sm md:text-base text-gray-600">Aquí está el resumen completo de tu negocio</p>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Valor Inventario</p>
-                <p className="text-xl font-bold text-blue-600">S/. {totalInventoryValue.toLocaleString('es-PE')}</p>
+        {/* KPI Cards - Top Row */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6 md:mb-8">
+          {/* Card 1 - Inventory Value */}
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-2 sm:p-3 md:p-4 lg:p-6 rounded-lg sm:rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-start justify-between mb-2 sm:mb-3 md:mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-blue-100 text-xs sm:text-xs md:text-sm font-medium">Valor Inventario</p>
+                <p className="text-base sm:text-lg md:text-2xl lg:text-3xl font-bold mt-0.5 sm:mt-1 md:mt-2 truncate">S/. {(totalInventoryValue / 1000).toFixed(1)}K</p>
               </div>
-              <Package className="text-blue-500" size={24} />
+              <div className="bg-white bg-opacity-20 p-1.5 sm:p-2 md:p-3 rounded-lg flex-shrink-0 ml-2">
+                <Package size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-white" />
+              </div>
             </div>
+            <p className="text-blue-100 text-xs">{inventory.length} productos</p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Ventas Totales</p>
-                <p className="text-xl font-bold text-green-600">S/. {totalSalesValue.toLocaleString('es-PE')}</p>
+          {/* Card 2 - Total Sales */}
+          <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-2 sm:p-3 md:p-4 lg:p-6 rounded-lg sm:rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-start justify-between mb-2 sm:mb-3 md:mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-green-100 text-xs sm:text-xs md:text-sm font-medium">Ventas Totales</p>
+                <p className="text-base sm:text-lg md:text-2xl lg:text-3xl font-bold mt-0.5 sm:mt-1 md:mt-2 truncate">S/. {(totalSalesValue / 1000).toFixed(1)}K</p>
               </div>
-              <ShoppingBag className="text-green-500" size={24} />
+              <div className="bg-white bg-opacity-20 p-1.5 sm:p-2 md:p-3 rounded-lg flex-shrink-0 ml-2">
+                <ShoppingBag size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-white" />
+              </div>
             </div>
+            <p className="text-green-100 text-xs">{totalSalesCount} transacciones</p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Clientes</p>
-                <p className="text-xl font-bold text-purple-600">{customers.length}</p>
+          {/* Card 3 - Customers */}
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-2 sm:p-3 md:p-4 lg:p-6 rounded-lg sm:rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-start justify-between mb-2 sm:mb-3 md:mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-purple-100 text-xs sm:text-xs md:text-sm font-medium">Clientes</p>
+                <p className="text-base sm:text-lg md:text-2xl lg:text-3xl font-bold mt-0.5 sm:mt-1 md:mt-2">{customers.length}</p>
               </div>
-              <Users className="text-purple-500" size={24} />
+              <div className="bg-white bg-opacity-20 p-1.5 sm:p-2 md:p-3 rounded-lg flex-shrink-0 ml-2">
+                <Users size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-white" />
+              </div>
             </div>
+            <p className="text-purple-100 text-xs">Registrados</p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-600 text-sm">Alertas Stock</p>
-                <p className="text-xl font-bold text-orange-600">{lowStockItems}</p>
+          {/* Card 4 - Low Stock Alert */}
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 text-white p-2 sm:p-3 md:p-4 lg:p-6 rounded-lg sm:rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-start justify-between mb-2 sm:mb-3 md:mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-orange-100 text-xs sm:text-xs md:text-sm font-medium">Alertas Stock</p>
+                <p className="text-base sm:text-lg md:text-2xl lg:text-3xl font-bold mt-0.5 sm:mt-1 md:mt-2">{lowStockItems}</p>
               </div>
-              <AlertTriangle className="text-orange-500" size={24} />
+              <div className="bg-white bg-opacity-20 p-1.5 sm:p-2 md:p-3 rounded-lg flex-shrink-0 ml-2">
+                <AlertTriangle size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 text-white" />
+              </div>
             </div>
+            <p className="text-orange-100 text-xs">Stock bajo</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-semibold mb-2 flex items-center gap-1">
-              <BarChart2 size={16} />
-              Ventas por Mes
-            </h3>
-            <div className="h-48 flex items-end justify-between gap-1">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6 md:mb-8">
+          {/* Sales Chart - Spans appropriate columns */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 2xl:col-span-3 bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
+              <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-800 flex items-center gap-2">
+                <BarChart2 className="text-blue-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                <span className="hidden sm:inline">Ventas por Mes</span>
+                <span className="sm:hidden">Ventas</span>
+              </h2>
+              <button className="text-blue-500 hover:text-blue-600 text-xs sm:text-sm font-medium hidden sm:block">Ver todo →</button>
+            </div>
+            <div className="h-40 sm:h-48 md:h-56 lg:h-64 flex items-end justify-between gap-0.5 sm:gap-1 md:gap-2">
               {salesData.map((data, index) => (
-                <div key={index} className="flex flex-col items-center flex-1">
-                  <div className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t" 
-                    style={{height: `${(data.sales / maxSales) * 100}%`, minHeight: data.sales > 0 ? '4px' : '0px'}}
+                <div key={index} className="flex flex-col items-center flex-1 group">
+                  <div className="w-full bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg group-hover:from-blue-600 group-hover:to-blue-400 transition-colors cursor-pointer relative" 
+                    style={{height: `${(data.sales / maxSales) * 100}%`, minHeight: data.sales > 0 ? '0.375em' : '0.125em'}}
                     title={`${data.month}: S/. ${data.sales.toLocaleString('es-PE')}`}
-                  ></div>
-                  <span className="text-xs mt-1">{data.month}</span>
+                  >
+                    {data.sales > 0 && (
+                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                        S/. {(data.sales / 1000).toFixed(1)}K
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs mt-1.5 sm:mt-2 md:mt-3 font-medium text-gray-600">{data.month}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-600 mt-2">Total de ventas: S/. {totalSalesValue.toLocaleString('es-PE')}</p>
+            <div className="mt-2 sm:mt-3 md:mt-4 pt-2 sm:pt-3 md:pt-4 border-t border-gray-200">
+              <p className="text-xs sm:text-sm text-gray-600">Total acumulado: <span className="font-bold text-blue-600">S/. {totalSalesValue.toLocaleString('es-PE')}</span></p>
+            </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-semibold mb-2 flex items-center gap-1">
-              <PieChart size={16} />
-              Distribución de Marcas
-            </h3>
-            <div className="space-y-2">
-              {productDistribution.map((brandData, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className="w-24 bg-gray-200 rounded-full h-1.5">
-                    <div 
-                      className="bg-blue-500 h-1.5 rounded-full" 
-                      style={{width: `${(brandData.count / inventory.reduce((sum, i) => sum + i.stock, 0)) * 100}%`}}
-                    ></div>
+          {/* Métodos de Pago - Donut Chart */}
+          <div className="col-span-1 bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+              <CreditCard className="text-green-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <span className="hidden sm:inline">Métodos de Pago</span>
+              <span className="sm:hidden">Pagos</span>
+            </h2>
+            {paymentData.length > 0 ? (
+              <>
+                <div className="h-28 sm:h-32 md:h-40">
+                  <DonutChart data={paymentData} colors={Object.values(paymentColors)} />
+                </div>
+                <div className="mt-2 sm:mt-3 md:mt-4 space-y-0.5 sm:space-y-1 md:space-y-2">
+                  {paymentData.slice(0, 3).map((item, index) => (
+                    <div key={index} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full flex-shrink-0" style={{backgroundColor: paymentColors[item.method] || '#6B7280'}}></div>
+                        <span className="text-gray-700 truncate text-xs">{item.method}</span>
+                      </div>
+                      <span className="font-semibold text-gray-800 flex-shrink-0 ml-2">{item.percentage}%</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-500 text-xs sm:text-sm">No hay datos</p>
+            )}
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6 md:mb-8">
+          {/* Estado de Ventas */}
+          <div className="col-span-1 bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+              <FileCheck className="text-blue-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <span className="hidden sm:inline">Estado de Ventas</span>
+              <span className="sm:hidden">Estado</span>
+            </h2>
+            {statusData.length > 0 ? (
+              <>
+                <div className="h-28 sm:h-32 md:h-40">
+                  <DonutChart data={statusData} colors={Object.values(statusColors)} innerRadius={45} outerRadius={70} />
+                </div>
+                <div className="mt-2 sm:mt-3 md:mt-4 space-y-0.5 sm:space-y-1 md:space-y-2">
+                  {statusData.map((item, index) => (
+                    <div key={index} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full flex-shrink-0" style={{backgroundColor: statusColors[item.status] || '#6B7280'}}></div>
+                        <span className="text-gray-700 truncate text-xs">{item.status}</span>
+                      </div>
+                      <span className="font-semibold text-gray-800 flex-shrink-0 ml-2">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-500 text-xs sm:text-sm">No hay datos</p>
+            )}
+          </div>
+
+          {/* Inventario por Marca */}
+          <div className="col-span-1 bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+              <Package className="text-purple-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <span className="hidden sm:inline">Stock por Marca</span>
+              <span className="sm:hidden">Marcas</span>
+            </h2>
+            {categoryData.length > 0 ? (
+              <>
+                <div className="h-28 sm:h-32 md:h-40">
+                  <DonutChart data={categoryData} colors={brandColors} innerRadius={45} outerRadius={70} />
+                </div>
+                <div className="mt-2 sm:mt-3 md:mt-4 space-y-0.5 sm:space-y-1 md:space-y-2">
+                  {categoryData.slice(0, 3).map((item, index) => (
+                    <div key={index} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-3 md:h-3 rounded-full flex-shrink-0" style={{backgroundColor: brandColors[index]}}></div>
+                        <span className="text-gray-700 truncate text-xs">{item.brand}</span>
+                      </div>
+                      <span className="font-semibold text-gray-800 flex-shrink-0 ml-2">{item.stock}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-gray-500 text-xs sm:text-sm">No hay datos</p>
+            )}
+          </div>
+
+          {/* Progreso de Actividad */}
+          <div className="col-span-1 sm:col-span-2 lg:col-span-1 bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6">Finalización</h2>
+            <div className="flex flex-col items-center">
+              <div className="flex justify-center mb-2 sm:mb-3 md:mb-6">
+                <CircularProgress percentage={completionRate} label="Completadas" color="#3B82F6" />
+              </div>
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-2 sm:p-3 md:p-4 rounded w-full">
+                <p className="text-xs sm:text-sm font-medium text-gray-800">Próximas acciones</p>
+                <ul className="mt-1 sm:mt-2 space-y-0.5 text-xs text-gray-600">
+                  <li>✓ Revisar stock bajo</li>
+                  <li>✓ Procesar órdenes</li>
+                  <li>✓ Actualizar precios</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Grid - Sales and Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-6 md:mb-8">
+          {/* Top Vendors */}
+          <div className="bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+              <TrendingUp className="text-green-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <span className="hidden md:inline">Mejores Vendedores</span>
+              <span className="md:hidden">Vendedores</span>
+            </h2>
+            <div className="space-y-1 sm:space-y-2 md:space-y-3 lg:space-y-4">
+              {topVendors.map((vendor, index) => (
+                <div key={index} className="flex items-center justify-between p-1.5 sm:p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 flex-1 min-w-0">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      {vendor.seller?.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-800 text-xs sm:text-sm truncate">{vendor.seller}</p>
+                      <p className="text-xs text-gray-600">{vendor.sales} ventas</p>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">{brandData.brand}</span>
-                  <span className="text-sm text-gray-600">{brandData.count}</span>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <p className="font-bold text-gray-800 text-xs sm:text-sm">S/. {vendor.total.toLocaleString('es-PE').substring(0, 10)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Top Products */}
+          <div className="bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+            <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+              <Zap className="text-orange-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <span className="hidden md:inline">Productos Vendidos</span>
+              <span className="md:hidden">Productos</span>
+            </h2>
+            <div className="space-y-1 sm:space-y-2 md:space-y-3 lg:space-y-4">
+              {topProducts.map((product, index) => (
+                <div key={index} className="flex items-center gap-1.5 sm:gap-2 md:gap-3 p-1.5 sm:p-2 md:p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-800 text-xs sm:text-sm truncate">{product.name}</p>
+                    <p className="text-xs text-gray-600">{product.quantity} unidades</p>
+                  </div>
+                  <div className="text-right flex-shrink-0 ml-2">
+                    <p className="font-bold text-gray-800 text-xs sm:text-sm">S/. {product.revenue.toLocaleString('es-PE').substring(0, 10)}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-semibold mb-2">Últimas Ventas</h3>
-            <div className="space-y-3">
-              {recentSales.map(sale => (
-                <div key={sale.id} className="flex items-start gap-2 p-2 bg-gray-50 rounded">
-                  <div className="bg-green-100 p-1 rounded-full">
-                    <ShoppingBag size={12} className="text-green-600" />
+        {/* Recent Sales */}
+        <div className="bg-white rounded-lg md:rounded-xl shadow-lg p-2 sm:p-3 md:p-4 lg:p-6">
+          <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-gray-800 mb-2 sm:mb-3 md:mb-6 flex items-center gap-1.5 sm:gap-2">
+            <ShoppingBag className="text-green-500 flex-shrink-0" size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+            <span className="hidden sm:inline">Últimas Ventas</span>
+            <span className="sm:hidden">Ventas</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-1.5 sm:gap-2 md:gap-3 lg:gap-4">
+            {recentSales.map(sale => (
+              <div key={sale.id} className="bg-gradient-to-br from-gray-50 to-gray-100 p-1.5 sm:p-2 md:p-3 lg:p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:shadow-md transition-all">
+                <div className="flex items-start justify-between mb-1.5 sm:mb-2 md:mb-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-800 text-xs sm:text-sm truncate">{sale.customer}</p>
+                    <p className="text-xs text-gray-600 truncate">{sale.documentType}: {sale.documentNumber}</p>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{sale.customer}</p>
-                    <p className="text-xs text-gray-600">
-                      {sale.documentType}: {sale.documentNumber} • S/. {sale.total.toLocaleString('es-PE')} • {sale.date} {sale.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-semibold mb-2">Casos Técnicos Recientes</h3>
-            <div className="space-y-3">
-              {recentTechCases.map(caseItem => (
-                <div key={caseItem.id} className="flex items-start gap-2 p-2 bg-gray-50 rounded">
-                  <div className="bg-orange-100 p-1 rounded-full">
-                    <Wrench size={12} className="text-orange-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{caseItem.equipmentModel}</p>
-                    <p className="text-xs text-gray-600">
-                      {caseItem.status} • {caseItem.date} • {caseItem.technician}
-                    </p>
+                  <div className="bg-green-100 p-1 sm:p-1.5 md:p-2 rounded-lg flex-shrink-0 ml-2">
+                    <ShoppingBag size={12} className="sm:w-4 sm:h-4 text-green-600" />
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="bg-white p-1.5 sm:p-2 rounded mb-1.5 sm:mb-2 md:mb-3">
+                  <p className="text-xs sm:text-sm font-bold text-green-600">S/. {sale.total.toLocaleString('es-PE').substring(0, 12)}</p>
+                </div>
+                <div className="flex items-center justify-between gap-1 text-xs">
+                  <span className="text-gray-500 truncate">{formatDate(sale.date)}</span>
+                  <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium whitespace-nowrap">Completada</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -972,12 +1900,28 @@ const App = () => {
 
     const handleSubmit = (e) => {
       e.preventDefault();
+      
+      // Validar campos requeridos
+      if (!formData.brand || !formData.model || !formData.serial || !formData.ram || 
+          !formData.storage || !formData.processor || !formData.status || 
+          !formData.supplier || !formData.cost || !formData.price || !formData.stock) {
+        alert('Por favor completa todos los campos requeridos');
+        return;
+      }
+      
       if (editingItem) {
+        // Actualizar equipo existente
         updateInventoryItem({ ...editingItem, ...formData });
-        setEditingItem(null);
       } else {
+        // Agregar nuevo equipo
         addInventoryItem(formData);
       }
+      
+      // Resetear formulario
+      resetForm();
+    };
+
+    const resetForm = () => {
       setFormData({
         brand: '',
         model: '',
@@ -995,6 +1939,7 @@ const App = () => {
         stock: '',
         image: ''
       });
+      setEditingItem(null);
       setShowAddForm(false);
     };
 
@@ -1021,50 +1966,34 @@ const App = () => {
     };
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Gestión de Inventario - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">Gestión de Inventario - COMPURSATIL</h2>
           {['Administrador', 'Gerente'].includes(currentUser.role) && (
             <button 
               onClick={() => {
+                resetForm();
                 setShowAddForm(true);
-                setEditingItem(null);
-                setFormData({
-                  brand: '',
-                  model: '',
-                  serial: '',
-                  ram: '',
-                  storage: '',
-                  processor: '',
-                  gpu: '',
-                  screen: '',
-                  os: '',
-                  status: 'Nuevo',
-                  supplier: '',
-                  cost: '',
-                  price: '',
-                  stock: '',
-                  image: ''
-                });
               }}
-              className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-blue-700"
+              className="bg-blue-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm flex items-center gap-1 hover:bg-blue-700 flex-shrink-0"
             >
-              <Plus size={14} />
-              Nuevo Equipo
+              <Plus size={14} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Nuevo Equipo</span>
+              <span className="sm:hidden">Nuevo</span>
             </button>
           )}
           {currentUser.role === 'Vendedor' && (
-            <span className="text-gray-500 text-sm">Modo visualización</span>
+            <span className="text-gray-500 text-xs sm:text-sm">Modo visualización</span>
           )}
         </div>
 
-        <div className="mb-4 flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+        <div className="mb-3 sm:mb-4 md:mb-6 flex flex-col sm:flex-row gap-1.5 sm:gap-2 md:gap-3">
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-2 sm:left-2.5 top-2 sm:top-2.5 text-gray-400 flex-shrink-0" size={16} />
             <input
               type="text"
-              placeholder="Buscar por número de serie, marca, modelo o estado..."
-              className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="Buscar..."
+              className="w-full pl-6 sm:pl-8 pr-2 sm:pr-3 py-1 sm:py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -1072,9 +2001,9 @@ const App = () => {
           <select
             value={selectedBrand}
             onChange={(e) => setSelectedBrand(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+            className="border border-gray-300 rounded px-2 sm:px-3 py-1 sm:py-1.5 focus:ring-1 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm flex-shrink-0"
           >
-            <option value="">Todas las marcas</option>
+            <option value="">Todas</option>
             {brands.map(brand => (
               <option key={brand} value={brand}>{brand}</option>
             ))}
@@ -1082,26 +2011,28 @@ const App = () => {
         </div>
 
         {showAddForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6 sticky top-0 bg-white border-b border-gray-200">
+                <div className="flex justify-between items-center mb-0">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold">
                     {editingItem ? 'Editar Equipo' : 'Registrar Nuevo Equipo'}
                   </h3>
                   <button
-                    onClick={() => setShowAddForm(false)}
-                    className="text-gray-500 hover:text-gray-700"
+                    onClick={() => resetForm()}
+                    className="text-gray-500 hover:text-gray-700 flex-shrink-0"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
-                
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              </div>
+
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   <input
                     name="brand"
                     placeholder="Marca"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.brand}
                     onChange={handleInputChange}
                     required
@@ -1109,7 +2040,7 @@ const App = () => {
                   <input
                     name="model"
                     placeholder="Modelo"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.model}
                     onChange={handleInputChange}
                     required
@@ -1117,14 +2048,14 @@ const App = () => {
                   <input
                     name="serial"
                     placeholder="Número de Serie"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.serial}
                     onChange={handleInputChange}
                     required
                   />
                   <select
                     name="ram"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.ram}
                     onChange={handleInputChange}
                     required
@@ -1136,7 +2067,7 @@ const App = () => {
                   </select>
                   <select
                     name="storage"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.storage}
                     onChange={handleInputChange}
                     required
@@ -1148,7 +2079,7 @@ const App = () => {
                   </select>
                   <select
                     name="processor"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.processor}
                     onChange={handleInputChange}
                     required
@@ -1160,7 +2091,7 @@ const App = () => {
                   </select>
                   <select
                     name="gpu"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.gpu}
                     onChange={handleInputChange}
                   >
@@ -1171,7 +2102,7 @@ const App = () => {
                   </select>
                   <select
                     name="screen"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.screen}
                     onChange={handleInputChange}
                   >
@@ -1182,7 +2113,7 @@ const App = () => {
                   </select>
                   <select
                     name="os"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.os}
                     onChange={handleInputChange}
                   >
@@ -1193,7 +2124,7 @@ const App = () => {
                   </select>
                   <select
                     name="status"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.status}
                     onChange={handleInputChange}
                     required
@@ -1206,69 +2137,69 @@ const App = () => {
                   <input
                     name="supplier"
                     placeholder="Proveedor"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.supplier}
                     onChange={handleInputChange}
                     required
                   />
                   <input
                     name="cost"
-                    placeholder="Costo de adquisición (S/.)"
+                    placeholder="Costo (S/.)"
                     type="number"
                     step="0.01"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.cost}
                     onChange={handleInputChange}
                     required
                   />
                   <input
                     name="price"
-                    placeholder="Precio de venta sugerido (S/.)"
+                    placeholder="Precio venta (S/.)"
                     type="number"
                     step="0.01"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.price}
                     onChange={handleInputChange}
                     required
                   />
                   <input
                     name="stock"
-                    placeholder="Stock disponible"
+                    placeholder="Stock"
                     type="number"
-                    className="border p-1.5 rounded text-sm"
+                    className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     value={formData.stock}
                     onChange={handleInputChange}
                     required
                   />
-                  <div className="md:col-span-2">
+                  <div className="sm:col-span-2">
                     <label className="block text-xs font-medium text-gray-700 mb-1">
                       Imagen del equipo
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       {formData.image && (
                         <img 
                           src={formData.image} 
                           alt="Equipo" 
-                          className="w-12 h-12 object-cover rounded"
+                          className="w-8 h-8 sm:w-12 sm:h-12 object-cover rounded flex-shrink-0"
                         />
                       )}
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageUpload}
-                        className="border p-1 rounded text-xs"
+                        className="border p-1 rounded text-xs flex-1 min-w-0"
                       />
                     </div>
                   </div>
                   
-                  <div className="md:col-span-2 flex gap-2 mt-2">
-                    <button type="submit" className="bg-green-600 text-white px-3 py-1.5 rounded text-sm hover:bg-green-700">
+                  <div className="sm:col-span-2 flex gap-1.5 sm:gap-2 mt-2">
+                    <button type="submit" className="bg-green-600 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs sm:text-sm hover:bg-green-700 flex-1">
                       {editingItem ? 'Actualizar' : 'Guardar'}
                     </button>
                     <button 
                       type="button"
-                      onClick={() => setShowAddForm(false)}
-                      className="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-400"
+                      onClick={() => resetForm()}
+                      className="bg-gray-300 text-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs sm:text-sm hover:bg-gray-400 flex-1"
                     >
                       Cancelar
                     </button>
@@ -1279,49 +2210,46 @@ const App = () => {
           </div>
         )}
 
-        <div className="bg-white rounded shadow overflow-hidden">
+        {/* Table - Responsive scrollable on mobile */}
+        <div className="bg-white rounded shadow overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Especificaciones</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precios (S/.)</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Ingreso</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Foto</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Especificaciones</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precios</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredInventory.map(item => (
                 <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2">
                     <img 
                       src={item.image} 
                       alt={`${item.brand} ${item.model}`}
-                      className="w-10 h-8 object-cover rounded"
+                      className="w-8 h-6 sm:w-10 sm:h-8 object-cover rounded"
                       onError={(e) => {
                         e.target.src = 'https://placehold.co/40x32/cccccc/666666?text=No+Image';
                       }}
                     />
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 min-w-0">
                     <div>
-                      <p className="font-medium">{item.brand} {item.model}</p>
-                      <p className="text-gray-500">S/N: {item.serial}</p>
+                      <p className="font-medium text-xs sm:text-sm truncate">{item.brand} {item.model}</p>
+                      <p className="text-gray-500 text-xs truncate">S/N: {item.serial}</p>
                     </div>
                   </td>
-                  <td className="px-3 py-2 text-gray-500">
-                    <div>{item.ram}</div>
-                    <div>{item.storage}</div>
-                    <div>{item.processor}</div>
-                    {item.gpu && <div>GPU: {item.gpu}</div>}
-                    {item.screen && <div>Pantalla: {item.screen}</div>}
-                    {item.os && <div>SO: {item.os}</div>}
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-gray-500 text-xs">
+                    <div className="truncate">{item.ram}</div>
+                    <div className="truncate">{item.storage}</div>
+                    <div className="truncate">{item.processor}</div>
                   </td>
-                  <td className="px-3 py-2">
-                    <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2">
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs inline-block ${
                       item.status === 'Nuevo' ? 'bg-green-100 text-green-800' :
                       item.status === 'Reacondicionado' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
@@ -1329,36 +2257,28 @@ const App = () => {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-3 py-2 font-medium">{item.stock}</td>
-                  <td className="px-3 py-2">
-                    <div className="text-xs">
-                      <div className="text-gray-500">Costo: S/. {item.cost.toLocaleString('es-PE')}</div>
-                      <div className="font-medium">Venta: S/. {item.price.toLocaleString('es-PE')}</div>
-                    </div>
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm">{item.stock}</td>
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs">
+                    <div className="text-gray-500">C: S/. {(item.cost / 1).toFixed(0)}</div>
+                    <div className="font-medium">V: S/. {(item.price / 1).toFixed(0)}</div>
                   </td>
-                  <td className="px-3 py-2 text-gray-500">{item.addedDate}</td>
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2">
                     <div className="flex gap-1">
                       {['Administrador', 'Gerente'].includes(currentUser.role) && (
                         <>
                           <button 
                             onClick={() => handleEdit(item)}
                             className="text-blue-600 hover:text-blue-800"
-                            title="Solo Administrador y Gerente pueden editar"
                           >
-                            <Edit size={14} />
+                            <Edit size={12} className="sm:w-4 sm:h-4" />
                           </button>
                           <button 
                             onClick={() => deleteInventoryItem(item.id)}
                             className="text-red-600 hover:text-red-800"
-                            title="Solo Administrador y Gerente pueden eliminar"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={12} className="sm:w-4 sm:h-4" />
                           </button>
                         </>
-                      )}
-                      {currentUser.role === 'Vendedor' && (
-                        <span className="text-gray-400 text-xs">Solo lectura</span>
                       )}
                     </div>
                   </td>
@@ -1598,10 +2518,15 @@ const App = () => {
         };
         
         if (editingSale) {
-          updateSale({
+          // Ensure ID is preserved when updating
+          const saleToUpdate = {
+            id: editingSale.id,
             ...editingSale,
-            ...newSale
-          });
+            ...newSale,
+            customerId: parseInt(saleFormData.customerId)
+          };
+          console.log('Updating sale:', saleToUpdate);
+          updateSale(saleToUpdate);
         } else {
           addSale(newSale);
         }
@@ -1906,9 +2831,9 @@ const App = () => {
     };
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Gestión de Ventas - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">Gestión de Ventas - COMPURSATIL</h2>
           <button 
             onClick={() => {
               const now = new Date();
@@ -1930,29 +2855,30 @@ const App = () => {
                 observations: ''
               });
             }}
-            className="bg-green-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-green-700"
+            className="bg-green-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm flex items-center gap-1 hover:bg-green-700 flex-shrink-0"
           >
-            <Plus size={14} />
-            Nueva Venta
+            <Plus size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Nueva Venta</span>
+            <span className="sm:hidden">Venta</span>
           </button>
         </div>
 
-        <div className="mb-4 flex gap-2">
-          <div className="relative">
-            <Calendar className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+        <div className="mb-3 sm:mb-4 md:mb-6 flex flex-col sm:flex-row gap-1.5 sm:gap-2 md:gap-3">
+          <div className="relative flex-shrink-0">
+            <Calendar className="absolute left-2 sm:left-2.5 top-2 sm:top-2.5 text-gray-400 flex-shrink-0" size={16} />
             <input
               type="date"
-              className="pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-sm"
+              className="pl-6 sm:pl-8 pr-2 sm:pr-3 py-1 sm:py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-xs sm:text-sm"
               value={filterDate}
               onChange={(e) => setFilterDate(e.target.value)}
             />
           </div>
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-2 sm:left-2.5 top-2 sm:top-2.5 text-gray-400 flex-shrink-0" size={16} />
             <input
               type="text"
-              placeholder="Buscar por cliente, documento o vendedor..."
-              className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-sm"
+              placeholder="Buscar..."
+              className="w-full pl-6 sm:pl-8 pr-2 sm:pr-3 py-1 sm:py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-green-500 focus:border-transparent text-xs sm:text-sm"
               value={searchSalesTerm}
               onChange={(e) => setSearchSalesTerm(e.target.value)}
             />
@@ -1960,11 +2886,11 @@ const App = () => {
         </div>
 
         {showSaleForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6 sticky top-0 bg-white border-b border-gray-200">
+                <div className="flex justify-between items-center mb-0">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold">
                     {editingSale ? 'Editar Venta' : 'Registrar Nueva Venta'}
                   </h3>
                   <button
@@ -1972,14 +2898,16 @@ const App = () => {
                       setShowSaleForm(false);
                       setEditingSale(null);
                     }}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 hover:text-gray-700 flex-shrink-0"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
-                
-                <form onSubmit={handleAddSale} className="space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              </div>
+
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+                <form onSubmit={handleAddSale} className="space-y-2 sm:space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Cliente
@@ -2566,7 +3494,7 @@ const App = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSales.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(sale => (
                 <tr key={sale.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2">{sale.date} {sale.time}</td>
+                  <td className="px-3 py-2">{formatDate(sale.date)} {sale.time}</td>
                   <td className="px-3 py-2 font-medium">{sale.customer}</td>
                   <td className="px-3 py-2">
                     <span className={`px-1.5 py-0.5 rounded-full text-xs ${
@@ -2695,96 +3623,99 @@ const App = () => {
     );
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Gestión de Clientes - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">Gestión de Clientes - COMPURSATIL</h2>
           <button 
             onClick={() => {
               setShowCustomerForm(true);
               setEditingCustomer(null);
               setCustomerFormData({ name: '', document: '', phone: '', email: '', documentType: 'DNI' });
             }}
-            className="bg-purple-600 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1 hover:bg-purple-700"
+            className="bg-purple-600 text-white px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded text-xs sm:text-sm flex items-center gap-1 hover:bg-purple-700 flex-shrink-0"
           >
-            <Plus size={14} />
-            Nuevo Cliente
+            <Plus size={14} className="sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Nuevo Cliente</span>
+            <span className="sm:hidden">Nuevo</span>
           </button>
         </div>
 
-        <div className="mb-4 relative">
-          <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+        <div className="mb-3 sm:mb-4 md:mb-6 relative">
+          <Search className="absolute left-2 sm:left-2.5 top-2 sm:top-2.5 text-gray-400 flex-shrink-0" size={16} />
           <input
             type="text"
-            placeholder="Buscar por nombre, documento o teléfono..."
-            className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-transparent text-sm"
+            placeholder="Buscar..."
+            className="w-full pl-6 sm:pl-8 pr-2 sm:pr-3 py-1 sm:py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-purple-500 focus:border-transparent text-xs sm:text-sm"
             value={searchCustomersTerm}
             onChange={(e) => setSearchCustomersTerm(e.target.value)}
           />
         </div>
 
         {showCustomerForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
-            <div className="bg-white rounded shadow-xl max-w-md w-full">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-3 md:p-4">
+            <div className="bg-white rounded shadow-xl w-full max-w-md">
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6 border-b border-gray-200">
+                <div className="flex justify-between items-center mb-0">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold">
                     {editingCustomer ? 'Editar Cliente' : 'Registrar Cliente'}
                   </h3>
                   <button
                     onClick={() => setShowCustomerForm(false)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 hover:text-gray-700 flex-shrink-0"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
-                
-                <form onSubmit={handleAddCustomer} className="space-y-2">
+              </div>
+
+              <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+                <form onSubmit={handleAddCustomer} className="space-y-1.5 sm:space-y-2">
                   <input
                     placeholder="Nombres y apellidos / Razón Social"
-                    className="border p-1.5 rounded w-full text-sm"
+                    className="border p-1.5 sm:p-2 rounded w-full text-xs sm:text-sm"
                     value={customerFormData.name}
                     onChange={(e) => setCustomerFormData({...customerFormData, name: e.target.value})}
                     required
                   />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     <select
                       value={customerFormData.documentType}
                       onChange={(e) => setCustomerFormData({...customerFormData, documentType: e.target.value})}
-                      className="border p-1.5 rounded text-sm"
+                      className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                     >
                       <option value="DNI">DNI</option>
                       <option value="RUC">RUC</option>
                     </select>
                     <input
-                      placeholder={customerFormData.documentType === 'DNI' ? 'Número de DNI' : 'Número de RUC'}
-                      className="border p-1.5 rounded text-sm"
+                      placeholder={customerFormData.documentType === 'DNI' ? 'DNI' : 'RUC'}
+                      className="border p-1.5 sm:p-2 rounded text-xs sm:text-sm"
                       value={customerFormData.document}
                       onChange={(e) => setCustomerFormData({...customerFormData, document: e.target.value})}
                       required
                     />
                   </div>
                   <input
-                    placeholder="Número de teléfono"
-                    className="border p-1.5 rounded w-full text-sm"
+                    placeholder="Teléfono"
+                    className="border p-1.5 sm:p-2 rounded w-full text-xs sm:text-sm"
                     value={customerFormData.phone}
                     onChange={(e) => setCustomerFormData({...customerFormData, phone: e.target.value})}
                     required
                   />
                   <input
-                    placeholder="Correo electrónico"
-                    className="border p-1.5 rounded w-full text-sm"
+                    placeholder="Correo"
+                    className="border p-1.5 sm:p-2 rounded w-full text-xs sm:text-sm"
                     value={customerFormData.email}
                     onChange={(e) => setCustomerFormData({...customerFormData, email: e.target.value})}
                     required
                   />
-                  <div className="flex gap-2">
-                    <button type="submit" className="bg-purple-600 text-white px-3 py-1.5 rounded text-sm hover:bg-purple-700">
+                  <div className="flex gap-1.5 sm:gap-2">
+                    <button type="submit" className="bg-purple-600 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs sm:text-sm hover:bg-purple-700 flex-1">
                       {editingCustomer ? 'Actualizar' : 'Guardar'}
                     </button>
                     <button 
                       type="button"
                       onClick={() => setShowCustomerForm(false)}
-                      className="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-400"
+                      className="bg-gray-300 text-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded text-xs sm:text-sm hover:bg-gray-400 flex-1"
                     >
                       Cancelar
                     </button>
@@ -2795,55 +3726,55 @@ const App = () => {
           </div>
         )}
 
-        <div className="bg-white rounded shadow overflow-hidden">
+        <div className="bg-white rounded shadow overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compras</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compras</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredCustomers.slice((currentPageCustomers - 1) * itemsPerPageCustomers, currentPageCustomers * itemsPerPageCustomers).map(customer => (
                 <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 font-medium">{customer.name}</td>
-                  <td className="px-3 py-2">
-                    <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 font-medium text-xs sm:text-sm truncate">{customer.name}</td>
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2">
+                    <span className={`px-1.5 py-0.5 rounded-full text-xs inline-block ${
                       customer.documentType === 'DNI' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
                     }`}>
                       {customer.documentType}
                     </span>
-                    <div className="text-sm">{customer.document}</div>
+                    <div className="text-xs mt-0.5">{customer.document}</div>
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs">
                     <div className="flex items-center gap-1 mb-0.5">
-                      <Phone size={12} className="text-gray-500" />
-                      <span className="text-xs">{customer.phone}</span>
+                      <Phone size={12} className="text-gray-500 flex-shrink-0" />
+                      <span className="truncate">{customer.phone}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Mail size={12} className="text-gray-500" />
-                      <span className="text-xs">{customer.email}</span>
+                      <Mail size={12} className="text-gray-500 flex-shrink-0" />
+                      <span className="truncate">{customer.email}</span>
                     </div>
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium">
                     {sales.filter(sale => sale.customerId === customer.id).length}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-2 sm:px-3 py-1.5 sm:py-2">
                     <div className="flex gap-1">
                       <button 
                         onClick={() => handleEditCustomer(customer)}
                         className="text-blue-600 hover:text-blue-800"
                       >
-                        <Edit size={14} />
+                        <Edit size={12} className="sm:w-4 sm:h-4" />
                       </button>
                       <button 
                         onClick={() => deleteCustomer(customer.id)}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={12} className="sm:w-4 sm:h-4" />
                       </button>
                     </div>
                   </td>
@@ -2893,31 +3824,31 @@ const App = () => {
     );
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Gestión de Garantías - COMPURSATIL</h2>
-          <div className="relative w-64">
-            <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">Gestión de Garantías - COMPURSATIL</h2>
+          <div className="relative w-full sm:w-60">
+            <Search className="absolute left-2 sm:left-2.5 top-2 sm:top-2.5 text-gray-400 flex-shrink-0" size={16} />
             <input
               type="text"
-              placeholder="Buscar por número de serie o cliente..."
-              className="w-full pl-8 pr-3 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="Buscar..."
+              className="w-full pl-6 sm:pl-8 pr-2 sm:pr-3 py-1 sm:py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        <div className="bg-white rounded shadow overflow-hidden">
+        <div className="bg-white rounded shadow overflow-x-auto">
           <table className="w-full text-xs">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodo</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Soporte Técnico</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodo</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Soporte</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -2926,24 +3857,24 @@ const App = () => {
                 const technicalCase = technicalCases.find(tc => tc.serial === warranty.serial);
                 return (
                   <tr key={warranty.id} className="hover:bg-gray-50">
-                    <td className="px-3 py-2">
-                      <p className="font-medium">S/N: {warranty.serial}</p>
-                      <p className="text-gray-500">
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 min-w-0">
+                      <p className="font-medium text-xs sm:text-sm truncate">S/N: {warranty.serial}</p>
+                      <p className="text-gray-500 text-xs truncate">
                         {inventory.find(i => i.serial === warranty.serial)?.brand} {inventory.find(i => i.serial === warranty.serial)?.model}
                       </p>
                     </td>
-                    <td className="px-3 py-2">{customer?.name || 'Cliente no encontrado'}</td>
-                    <td className="px-3 py-2 text-gray-500">
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm truncate">{customer?.name || 'No encontrado'}</td>
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-gray-500 text-xs">
                       <div>{warranty.startDate}</div>
-                      <div className="text-gray-400">hasta {warranty.endDate}</div>
+                      <div className="text-gray-400">{warranty.endDate}</div>
                     </td>
-                    <td className="px-3 py-2">
-                      <span className="px-1.5 py-0.5 rounded-full text-xs bg-purple-100 text-purple-800">
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2">
+                      <span className="px-1.5 py-0.5 rounded-full text-xs bg-purple-100 text-purple-800 inline-block">
                         {warranty.warrantyType}
                       </span>
                     </td>
-                    <td className="px-3 py-2">
-                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                    <td className="px-2 sm:px-3 py-1.5 sm:py-2">
+                      <span className={`px-1.5 py-0.5 rounded-full text-xs inline-block ${
                         warranty.status === 'Activa' ? 'bg-green-100 text-green-800' :
                         warranty.status === 'Vencida' ? 'bg-red-100 text-red-800' :
                         'bg-yellow-100 text-yellow-800'
@@ -3128,24 +4059,24 @@ const App = () => {
     };
 
     return (
-      <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">Soporte Técnico - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-3 sm:mb-4 md:mb-6">Soporte Técnico - COMPURSATIL</h2>
 
         {/* Quick Add Case Section */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-orange-200">
-          <h3 className="text-lg font-bold mb-3">Registrar Equipo Recibido</h3>
+        <div className="bg-white rounded-lg shadow-md p-2 sm:p-3 md:p-4 mb-3 sm:mb-4 md:mb-6 border border-orange-200">
+          <h3 className="text-xs sm:text-sm md:text-base font-bold mb-2 sm:mb-3">Registrar Equipo Recibido</h3>
           
           {!showQuickForm ? (
             <div className="relative">
-              <label className="block text-sm font-medium mb-2">Buscar Cliente por Nombre o Documento</label>
+              <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">Buscar Cliente</label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <Search className="absolute left-2 sm:left-3 top-2 sm:top-3 text-gray-400 flex-shrink-0" size={16} />
                 <input
                   type="text"
-                  placeholder="Ej: Juan Pérez o 12345678"
+                  placeholder="Cliente o documento..."
                   value={searchInput}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500"
+                  className="w-full pl-6 sm:pl-10 pr-2 sm:pr-3 py-1 sm:py-2 border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 text-xs sm:text-sm"
                 />
               </div>
 
@@ -3346,10 +4277,10 @@ const App = () => {
     const technicians = [...new Set(technicalCases.map(caseItem => caseItem.technician))];
 
     return (
-      <div className="p-4">
-        <h2 className="text-xl font-bold mb-4">Seguimiento de Soporte Técnico - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold mb-3 sm:mb-4 md:mb-6">Seguimiento de Soporte Técnico - COMPURSATIL</h2>
         
-        <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-2">
+        <div className="mb-3 sm:mb-4 md:mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
             <input
@@ -3493,13 +4424,13 @@ const App = () => {
     );
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Truck size={28} /> Seguimiento de Envíos
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold flex items-center gap-2">
+            <Truck size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6" /> <span className="hidden md:inline">Seguimiento de Envíos</span><span className="md:hidden">Envíos</span>
           </h2>
-          <div className="flex gap-2 items-center">
-            <span className="text-sm text-gray-600">Total: {shipments && shipments.length ? shipments.length : 0} envíos</span>
+          <div className="flex gap-2 items-center text-xs sm:text-sm">
+            <span className="text-gray-600">Total: {shipments && shipments.length ? shipments.length : 0}</span>
             <button
               onClick={() => {
                 setLoading(true);
@@ -3991,9 +4922,9 @@ const App = () => {
     };
 
     return (
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Gestión de Usuarios - COMPURSATIL</h2>
+      <div className="p-2 sm:p-3 md:p-4 lg:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold">Gestión de Usuarios - COMPURSATIL</h2>
           <button 
             onClick={() => {
               setShowUserForm(true);
@@ -4480,9 +5411,9 @@ const App = () => {
           }
         }
       `}</style>
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100 text-base">
         <Sidebar />
-        <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <main className={`flex-1 transition-all duration-300 w-full overflow-x-hidden ${sidebarCollapsed ? 'sm:ml-4 md:ml-16 lg:ml-20' : 'sm:ml-48 md:ml-64 lg:ml-80'}`}>
           {renderModule()}
         </main>
       </div>
