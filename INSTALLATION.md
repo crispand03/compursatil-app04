@@ -11,8 +11,8 @@
 
 ### Paso 1: Clonar el repositorio
 ```bash
-git clone https://github.com/crispand03/compursatil-app03.git
-cd compursatil-app03
+git clone https://github.com/crispand03/compursatil-app04.git
+cd compursatil-app04
 ```
 
 ### Paso 2: Instalar dependencias del frontend
@@ -29,22 +29,33 @@ cd ..
 
 ### Paso 4: Configurar la base de datos
 
-#### Opción A: Si tienes un backup de la BD (RECOMENDADO)
+#### Paso 4A: Crear la base de datos
 ```bash
-# Crear base de datos
 mysql -u root -p
+```
+Luego en MySQL Command Line ejecuta:
+```sql
 CREATE DATABASE compursatil;
 EXIT;
+```
 
-# Restaurar desde backup (si lo tienes)
+#### Paso 4B: Importar los datos (ARCHIVO PRINCIPAL)
+```bash
 mysql -u root -p compursatil < database/compursatil.sql
 ```
 
-#### Opción B: Crear BD desde cero
+Esto importa:
+- ✅ Esquema completo (todas las tablas)
+- ✅ Estructura de base de datos
+- ✅ Datos iniciales
+
+#### Paso 4C: Agregar datos adicionales (OPCIONAL)
 ```bash
-cd server
-mysql -u root -p compursatil < ../database/compursatil.sql
-cd ..
+# Datos de ejemplo adicionales
+mysql -u root -p compursatil < database/seed-data.sql
+
+# Detalles adicionales
+mysql -u root -p compursatil < database/insert-details.sql
 ```
 
 ### Paso 5: Configurar variables de entorno
@@ -81,7 +92,7 @@ npm run dev
 
 ### Paso 7: Acceder a la aplicación
 
-- **Frontend**: http://localhost:5173/compursatil-app02
+- **Frontend**: http://localhost:5173/compursatil-app04
 - **Backend API**: http://localhost:3001/api
 - **Health Check**: http://localhost:3001/api/health
 
@@ -92,7 +103,7 @@ npm run dev
 ## 📁 Estructura del Proyecto
 
 ```
-compursatil-app03/
+compursatil-app04/
 ├── src/                          # Frontend React
 │   ├── App.jsx                  # Componente principal
 │   ├── App.css                  # Estilos
